@@ -1,39 +1,42 @@
-# Repository Guidelines
+# 仓库规范
 
-## Project Structure & Module Organization
+## 项目结构与模块组织
 
-This is STM32G474VETx firmware generated with STM32CubeMX and built with Keil MDK. The current application initializes SPI2 and displays a test screen on a 128×64 SSD1306 OLED.
+本项目为 STM32G474VETx 固件，由 STM32CubeMX 生成，使用 Keil MDK 构建。当前应用程序初始化 SPI2，并在 128×64 的 SSD1306 OLED 上显示测试画面。
 
-- `Core/Src/`: application entry point, interrupt handlers, HAL initialization, and `oled.c`; font data is embedded in the OLED driver.
-- `Core/Inc/`: matching public headers and HAL configuration.
-- `Drivers/`: bundled STM32G4 HAL and CMSIS dependencies. Avoid unrelated vendor edits.
-- `MDK-ARM/`: Keil project, startup assembly, linker scatter file, and build outputs.
-- `g474_code.ioc`: CubeMX peripheral, pin, and clock configuration.
+- `Core/Src/`：应用程序入口、中断处理函数、HAL 初始化以及 `oled.c`；字模数据内嵌在 OLED 驱动中。
+- `Core/Inc/`：对应的公共头文件与 HAL 配置。
+- `Drivers/`：随工程附带的 STM32G4 HAL 与 CMSIS 依赖。避免进行与需求无关的厂商代码修改。
+- `MDK-ARM/`：Keil 工程、启动汇编、链接分散加载文件以及构建产物。
+- `g474_code.ioc`：CubeMX 的外设、引脚与时钟配置。
 
-## Build, Test, and Development Commands
+## 构建、测试与开发命令
 
-Open `MDK-ARM/g474_code.uvprojx` in Keil µVision, select target `g474_code`, and build with F7. The recorded build used Arm Compiler 6.24.
+在 Keil µVision 中打开 `MDK-ARM/g474_code.uvprojx`，选择目标 `g474_code`，按 F7 构建。已记录的构建使用的编译器为 Arm Compiler 6.24。
 
-If `UV4.exe` is available on PATH, run from the repository root:
+如果 `UV4.exe` 已加入 PATH，可在仓库根目录执行：
 
 ```powershell
 UV4.exe -b MDK-ARM\g474_code.uvprojx -t g474_code -o build.log
 ```
 
-Inspect `build.log` for errors and warnings. Run firmware by downloading it to the board through µVision's configured debugger. No application Makefile, CMake build, or automated test command is provided.
+检查 `build.log` 中的错误与警告。通过 µVision 中配置好的调试器将固件下载到开发板运行。本项目未提供应用层 Makefile、CMake 构建或自动化测试命令。
 
-## Coding Style & Naming Conventions
+## 代码风格与命名约定
 
-Follow surrounding C style: two-space indentation in generated code, four spaces in the OLED module, and existing brace placement. Use matching `.c`/`.h` module names, `OLED_*` public display functions, and uppercase macros such as `OLED_WIDTH`. Keep internal helpers and buffers `static`. No formatter or linter configuration is present.
+遵循现有 C 代码风格：生成代码使用两空格缩进，OLED 模块使用四空格缩进，并保持既有的大括号风格。模块名保持 `.c`/`.h` 成对一致，显示相关的公共函数使用 `OLED_*` 前缀，宏使用全大写（如 `OLED_WIDTH`）。内部辅助函数与缓冲区声明为 `static`。项目中没有格式化工具或 linter 配置。
 
-Put custom changes in CubeMX `USER CODE` blocks where available. Update `.ioc` for peripheral changes and inspect regeneration diffs. Add new source files to the Keil project explicitly.
+自定义改动尽量放在 CubeMX 的 `USER CODE` 代码块中。涉及外设变更时同步更新 `.ioc`，并检查重新生成代码后的差异。新增源文件需显式添加到 Keil 工程中。
 
-## Testing Guidelines
+## 测试规范
 
-No application test framework or coverage threshold is configured; CMSIS test suites are bundled vendor material. Build firmware changes and verify affected behavior on hardware. For display changes, check startup text, drawing boundaries, and refresh behavior. Record board, wiring, and results. For non-trivial hardware-independent logic, add a focused runnable check such as `tests/oled_bounds_check.c` and document its command.
+项目未配置应用层测试框架或覆盖率要求；CMSIS 测试套件属于厂商附带材料。修改固件后进行构建，并在硬件上验证相关行为。涉及显示改动时，检查开机文本、绘制边界与刷新表现。记录所用开发板、接线方式与测试结果。对于与硬件无关且逻辑较复杂的部分，可添加针对性的可运行检查，例如 `tests/oled_bounds_check.c`，并在文档中写明其运行命令。
 
-## Commit & Pull Request Guidelines
+## 提交与 Pull Request 规范
 
-History contains only `init` and `时钟修复`; no strict message convention is established. Use short, descriptive subjects identifying the changed behavior. Keep commits focused and exclude incidental build outputs and personal IDE settings.
+提交历史目前只有 `init` 和 `时钟修复`，尚未形成严格的提交信息约定。提交信息应简短且具描述性，说明所变更的行为。保持提交内容聚焦，排除无关紧要的构建产物和个人 IDE 配置。
 
-Pull requests should explain the change, list affected peripherals or pins, and report build and hardware verification. Link relevant issues and attach display photos when visual behavior changes. State explicitly when hardware testing was unavailable.
+Pull Request 应说明改动内容、列出涉及的外设或引脚，并报告构建与硬件验证情况。关联相关 issue；当显示等可视行为发生变化时附上实物照片。若无法进行硬件测试，需明确说明。
+
+## 代码审查与合并规范
+每次进行审查或进行改动不可凭记忆，因为我会人工修改一部分。
