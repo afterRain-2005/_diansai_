@@ -1,9 +1,9 @@
 --cpu=Cortex-M4.fp.sp
 "g474_code\startup_stm32g474xx.o"
+"g474_code\oled.o"
 "g474_code\main.o"
 "g474_code\stm32g4xx_it.o"
 "g474_code\stm32g4xx_hal_msp.o"
-"g474_code\oled.o"
 "g474_code\stm32g4xx_hal_spi.o"
 "g474_code\stm32g4xx_hal_spi_ex.o"
 "g474_code\stm32g4xx_hal.o"
