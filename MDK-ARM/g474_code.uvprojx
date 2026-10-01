@@ -401,6 +401,11 @@
               <FilePath>..\Core\Src\oled.c</FilePath>
             </File>
             <File>
+              <FileName>Keyboard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/Keyboard.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>

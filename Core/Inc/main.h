@@ -53,6 +53,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+void Keyboard_TickISR(void);
 
 /* USER CODE END EFP */
 

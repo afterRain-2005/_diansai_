@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "oled.h"
+#include "Keyboard.h"
 
 /* USER CODE END Includes */
 
@@ -68,6 +69,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  char key;
+  uint32_t key_count = 0U;
 
   /* USER CODE END 1 */
 
@@ -94,11 +97,13 @@ int main(void)
 
   OLED_Init();
   OLED_Clear();
-  OLED_ShowString(0, 0, "OLED TEST", 16);
-  OLED_ShowString(0, 16, "SPI2 READY", 16);
-  OLED_ShowInt(0, 32, 2026, 16);
-  OLED_DrawRect(0, 0, OLED_WIDTH, OLED_HEIGHT, 0);
+  OLED_ShowString(0, 0, "KEYBOARD TEST", 16);
+  OLED_ShowString(0, 16, "KEY: -", 16);
+  OLED_ShowString(0, 32, "COUNT: 0", 16);
+  OLED_ShowString(0, 48, "PRESS ONE KEY", 16);
   OLED_Refresh();
+
+  Keyboard_Init();
 	
   /* USER CODE END 2 */
 
@@ -109,6 +114,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    key = Keyboard_GetKey();
+    if (key != KEYBOARD_NO_KEY)
+    {
+      key_count = (key_count + 1U) % 1000000U;
+      OLED_ShowChar(40, 16, key, 16);
+      OLED_ShowString(56, 32, "      ", 16);
+      OLED_ShowInt(56, 32, (int32_t)key_count, 16);
+      OLED_Refresh();
+    }
   }
   /* USER CODE END 3 */
 }
@@ -206,6 +220,7 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -213,7 +228,23 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_0|GPIO_PIN_1, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, OLED_RES_Pin|OLED_DC_Pin|OLED_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PE2 PE3 PE0 PE1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PE4 PE5 PE6 PE7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : OLED_RES_Pin OLED_DC_Pin OLED_CS_Pin */
   GPIO_InitStruct.Pin = OLED_RES_Pin|OLED_DC_Pin|OLED_CS_Pin;
@@ -228,6 +259,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/* Called from SysTick_Handler every 1 ms; keep SPI/display work in main. */
+void Keyboard_TickISR(void)
+{
+  Keyboard_ScanISR();
+}
 
 /* USER CODE END 4 */
 
