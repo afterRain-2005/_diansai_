@@ -6,9 +6,11 @@
 cmd /c tests\run_checks.cmd
 ```
 
-脚本会运行 MSVC 主机检查，覆盖死区编码、三相 PWM 相位和边界、故障关断与恢复、ADC RMS、PI 数值边界、Flash 参数记录和写入失败模拟、OLED 裁剪与 SPI 重试，以及键盘去抖和 C 键停机优先级。
+脚本使用 MSVC 或 PATH 中的 GCC，检查三相 SPWM 相位、占空比范围、频率和幅度设置、启停、两项参数菜单、OLED 裁剪与 SPI 重试，以及键盘扫描和去抖。
 
-这些检查不能替代实际电气验证、ADC 标定、驱动器极性检查或功率级测试。
+当前为开环 SPWM：不启动 ADC DMA，不计算 RMS，不执行 PI、软启动、软件故障检查或 Flash 参数保存。上电默认 50 Hz、10% 幅度；TIM1 的硬件死区和 BKIN 沿用 CubeMX 配置。A 键切换启停，C 键停止，D 键进入菜单；菜单内 2/8 选择频率或幅度，4/6 减加，C/D 返回。参数立即生效，重启恢复默认值。
+
+这些检查不能替代实际电气验证、驱动器极性检查或功率级测试。
 
 On the STM32G474 board, connect rows R1–R4 to PE0–PE3 and columns C1–C4
 to PE4–PE7. `Keyboard_Init()` overrides CubeMX's push-pull/no-pull defaults
@@ -24,4 +26,4 @@ D C B A
 * 7 4 1
 ```
 
-键盘只保留一个待处理事件，主循环长时间阻塞时后续按键可能丢失；C 键另设独立停机锁存。
+键盘只保留一个待处理事件，主循环长时间阻塞时后续按键可能丢失；C 键优先占用待处理事件，由主循环处理停机。

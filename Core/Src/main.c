@@ -24,6 +24,7 @@
 #include "oled.h"
 #include "Keyboard.h"
 #include "Bipolar_PWM.h"
+#include "inverter_control_tools.h"
 #include "inverter_menu.h"
 
 /* USER CODE END Includes */
@@ -114,8 +115,7 @@ int main(void)
   OLED_Init();
   Keyboard_Init();
 
-  /* 加载 Flash 参数（频率/幅度），建表并启动 PWM/TIM5/ADC */
-  INV_Menu_Init();
+  /* 建立正弦表并启动 PWM/TIM5，默认保持输出关闭。 */
   if (INV_Init() != HAL_OK) Error_Handler();
 
   /* 欢迎界面（替代原工程 gImage_welcome 开机图） */
@@ -137,7 +137,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    INV_Service();
     key = Keyboard_GetKey();
     if (key == 'A')                 /* 功率输出开关 */
     {
@@ -145,11 +144,6 @@ int main(void)
       else             INV_OutputEnable();
       INV_ShowStandby();
       standby_tick = HAL_GetTick();
-    }
-    else if (key == 'B')
-    {
-      (void)INV_ClearFault();
-      INV_ShowStandby();
     }
     else if (key == 'C')
     {
@@ -163,7 +157,7 @@ int main(void)
       standby_tick = HAL_GetTick();
     }
 
-    /* 待机界面定时刷新（Vrms 等监测量） */
+    /* 定时刷新输出命令和频率、幅度。 */
     if (HAL_GetTick() - standby_tick >= 200U)
     {
       standby_tick = HAL_GetTick();
@@ -596,7 +590,6 @@ static void MX_GPIO_Init(void)
 void Keyboard_TickISR(void)
 {
   Keyboard_ScanISR();
-  INV_SafetyTick();
 }
 
 /* USER CODE END 4 */
@@ -608,7 +601,7 @@ void Keyboard_TickISR(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  INV_EmergencyStop();
+  INV_OutputDisable();
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)

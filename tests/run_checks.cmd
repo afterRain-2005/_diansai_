@@ -6,15 +6,20 @@ if errorlevel 1 (
   if exist "D:\VisualStudio\VC\Auxiliary\Build\vcvars64.bat" (
     call "D:\VisualStudio\VC\Auxiliary\Build\vcvars64.bat" >nul
   ) else (
-    echo Run from an x64 Native Tools Command Prompt for Visual Studio.
-    exit /b 1
+    where gcc >nul 2>nul
+    if errorlevel 1 (
+      echo Install MSVC or put GCC on PATH.
+      exit /b 1
+    )
   )
 )
-set "INVERTER_TEST_DIR=%~d0\tmp\g474_inverter_checks"
+set "INVERTER_TEST_DIR=%TEMP%\g474_inverter_checks"
 if not exist "%INVERTER_TEST_DIR%" mkdir "%INVERTER_TEST_DIR%"
 set "TEMP=%INVERTER_TEST_DIR%"
 set "TMP=%INVERTER_TEST_DIR%"
 pushd "%INVERTER_TEST_DIR%"
+where cl >nul 2>nul
+if errorlevel 1 goto gcc_checks
 cl /nologo /utf-8 /std:c11 /W3 /WX /I"%INVERTER_ROOT%\Core\Inc" "%INVERTER_ROOT%\tests\inverter_check.c" /Fe:inverter_check.exe
 if errorlevel 1 goto failed
 inverter_check.exe
@@ -23,6 +28,17 @@ cl /nologo /utf-8 /std:c11 /W3 /WX /I"%INVERTER_ROOT%\tests\keyboard_mock" /I"%I
 if errorlevel 1 goto failed
 keyboard_scan_check.exe
 if errorlevel 1 goto failed
+goto passed
+:gcc_checks
+gcc -std=c11 -Wall -Wextra -Werror -I"%INVERTER_ROOT%\Core\Inc" "%INVERTER_ROOT%\tests\inverter_check.c" -o inverter_check.exe -lm
+if errorlevel 1 goto failed
+inverter_check.exe
+if errorlevel 1 goto failed
+gcc -std=c11 -Wall -Wextra -Werror -I"%INVERTER_ROOT%\tests\keyboard_mock" -I"%INVERTER_ROOT%\Core\Inc" "%INVERTER_ROOT%\Core\Src\Keyboard.c" "%INVERTER_ROOT%\tests\keyboard_scan_check.c" -o keyboard_scan_check.exe
+if errorlevel 1 goto failed
+keyboard_scan_check.exe
+if errorlevel 1 goto failed
+:passed
 popd
 exit /b 0
 :failed

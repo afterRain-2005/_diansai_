@@ -3,28 +3,20 @@
 
 #include <stdint.h>
 
-typedef struct
-{
-    float kp;
-    float ki;
-    float integral;
-    float output;
-    float minimum;
-    float maximum;
-} INV_PI_Controller;
+#define INV_FREQ_MIN      30
+#define INV_FREQ_MAX      80
+#define INV_FREQ_DEFAULT  50
+#define INV_AMP_MIN       0
+#define INV_AMP_MAX       100
+#define INV_AMP_DEFAULT   10
 
-void INV_PI_Init(INV_PI_Controller *controller, float kp, float ki,
-                 float minimum, float maximum);
-float INV_PI_Update(INV_PI_Controller *controller, float error);
-void INV_PI_Reset(INV_PI_Controller *controller);
+extern volatile int32_t INV_Freq;    /* 基波频率，Hz */
+extern volatile int32_t INV_Amp;     /* 调制幅度，% */
+extern volatile int32_t INV_PwmFlag; /* 软件启停命令，不代表硬件输出测量值 */
 
-void INV_Clarke(float phase_a, float phase_b, float phase_c,
-                float *alpha, float *beta);
-void INV_Park(float alpha, float beta, float sine, float cosine,
-              float *direct, float *quadrature);
-void INV_InvPark(float direct, float quadrature, float sine, float cosine,
-                 float *alpha, float *beta);
-void INV_InvClarke(float alpha, float beta,
-                   float *phase_a, float *phase_b, float *phase_c);
+void INV_SetFrequency(int32_t frequency);
+void INV_SetAmplitude(int32_t amplitude);
+void INV_OutputEnable(void);
+void INV_OutputDisable(void);
 
 #endif
