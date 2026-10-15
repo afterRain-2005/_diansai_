@@ -2,43 +2,42 @@
 
 ## 项目结构与模块组织
 
-本项目为 STM32G474VETx 固件，由 STM32CubeMX 生成，使用 Keil MDK 构建。当前应用为三相 SPWM 逆变器：TIM1 三相互补 PWM（50kHz 载波、BDTR 硬件死区、BKIN 故障封锁）、TIM5 调制节拍中断、ADC1 四通道 DMA 采样、4x4 键盘 + 128x64 SSD1306 OLED 参数菜单。
+本项目为 STM32G474VETx 三相 SPWM 逆变器固件，使用 TIM1 生成 50 kHz 互补 PWM，支持硬件死区和刹车保护，通过 TIM5 更新调制，配有 ADC1 DMA 采样、矩阵键盘和 SSD1306 OLED。
 
-- `Core/Src/`：应用程序入口、中断处理函数、HAL 初始化、`oled.c`、`Keyboard.c`、`Bipolar_PWM.c`（三相 SPWM 核心）、`inverter_menu.c`（表驱动菜单 + Flash 参数）。字模数据内嵌在 OLED 驱动中。
-- `Core/Inc/`：对应的公共头文件与 HAL 配置。
-- `Drivers/`：随工程附带的 STM32G4 HAL 与 CMSIS 依赖。避免进行与需求无关的厂商代码修改。
-- `MDK-ARM/`：Keil 工程、启动汇编、链接分散加载文件以及构建产物。
-- `g474_code.ioc`：CubeMX 的外设、引脚与时钟配置。
-
-逆变器引脚（改硬件接线时同步 `.ioc` 与 `main.h`）：TIM1 CH1/CH2/CH3 = PA8/PA9/PA10，CH1N/CH2N/CH3N = PA7/PB0/PB1，BKIN = PA6；TIM5 无输出引脚；ADC1 = PC0..PC3；键盘 = PE0..PE7；OLED = SPI2(PB13/PB15) + PD0/PD1/PD2；控制脚 PWM_EN=PA1、INV_OFFLINE=PA3、RS_CTRL=PB6。
+- `Core/Src/`：应用代码，包括 `Bipolar_PWM.c`、`inverter_control_tools.c`、`inverter_menu.c`、`Keyboard.c`、`oled.c`，以及 HAL 初始化和中断处理代码。
+- `Core/Inc/`：对应的头文件与配置；OLED 字模内嵌于 `oled.c`。
+- `Drivers/`：厂商 HAL/CMSIS 代码，避免无关修改。
+- `MDK-ARM/`：Keil 工程、启动代码、链接配置和构建产物。
+- `tests/`：主机检查及硬件模拟代码，详见 `tests/README.md`。
+- `g474_code.ioc`：CubeMX 配置。
 
 ## 构建、测试与开发命令
 
-在 Keil µVision 中打开 `MDK-ARM/g474_code.uvprojx`，选择目标 `g474_code`，按 F7 构建。已记录的构建使用的编译器为 Arm Compiler 6.24。
-
-如果 `UV4.exe` 已加入 PATH，可在仓库根目录执行：
+在 Keil µVision 中打开 `MDK-ARM/g474_code.uvprojx`，选择目标 `g474_code`，按 F7 构建。工程指定 Arm Compiler 6.24。若 `UV4.exe` 已加入 PATH，可在仓库根目录执行：
 
 ```powershell
 UV4.exe -b MDK-ARM\g474_code.uvprojx -t g474_code -o build.log
+cmd /c tests\run_checks.cmd
 ```
 
-检查 `build.log` 中的错误与警告。通过 µVision 中配置好的调试器将固件下载到开发板运行。本项目未提供应用层 Makefile、CMake 构建或自动化测试命令。
+第一条命令构建固件，完成后检查 `build.log` 中的错误与警告。第二条命令使用 MSVC 编译并运行主机检查；若无法自动找到编译器，请使用 Visual Studio 的 x64 Native Tools 命令提示符。通过 µVision 中配置好的调试探针下载和调试。
 
 ## 代码风格与命名约定
 
-遵循现有 C 代码风格：生成代码使用两空格缩进，OLED 模块使用四空格缩进，并保持既有的大括号风格。模块名保持 `.c`/`.h` 成对一致，显示相关的公共函数使用 `OLED_*` 前缀，宏使用全大写（如 `OLED_WIDTH`）。内部辅助函数与缓冲区声明为 `static`。项目中没有格式化工具或 linter 配置。
+遵循周围 C 代码的风格：生成代码使用两空格缩进，自定义模块通常使用四空格。源文件与头文件保持同名配对，宏使用全大写，OLED 接口使用 `OLED_` 前缀，内部辅助函数和缓冲区声明为 `static`。项目未配置格式化工具或代码检查工具。
 
-自定义改动尽量放在 CubeMX 的 `USER CODE` 代码块中。涉及外设变更时同步更新 `.ioc`，并检查重新生成代码后的差异。新增源文件需显式添加到 Keil 工程中。
+修改生成文件时，尽量将自定义代码放入 `USER CODE` 块。外设变更须同步更新 `.ioc` 和 `main.h` 中的引脚定义；新增源文件须显式加入 Keil 工程。
+
+不可自行写测试与保护代码，造成代码冗余。
 
 ## 测试规范
 
-项目未配置应用层测试框架或覆盖率要求；CMSIS 测试套件属于厂商附带材料。修改固件后进行构建，并在硬件上验证相关行为。涉及显示改动时，检查开机文本、绘制边界与刷新表现。记录所用开发板、接线方式与测试结果。对于与硬件无关且逻辑较复杂的部分，可添加针对性的可运行检查，例如 `tests/oled_bounds_check.c`，并在文档中写明其运行命令。
+主机检查覆盖 PWM、故障处理、RMS/PI 计算、Flash 记录、OLED 行为和键盘扫描。测试文件沿用 `*_check.c` 命名，项目未设置覆盖率门槛。非简单逻辑改动须附带一个小型、可运行的回归检查。修改代码后须构建固件。单独记录开发板、接线及硬件验证结果；主机模拟不能证明实际电气行为。
 
 ## 提交与 Pull Request 规范
 
-提交历史目前只有 `init` 和 `时钟修复`，尚未形成严格的提交信息约定。提交信息应简短且具描述性，说明所变更的行为。保持提交内容聚焦，排除无关紧要的构建产物和个人 IDE 配置。
+历史提交使用简短的中英文标题，尚无统一前缀规则。提交信息应简洁说明行为变化。保持改动聚焦，排除生成的二进制文件和个人 IDE 配置。PR 应说明涉及的外设、引脚及验证结果，适用时关联 issue；显示改动应附实物照片。未进行硬件测试时须明确说明。
 
-Pull Request 应说明改动内容、列出涉及的外设或引脚，并报告构建与硬件验证情况。关联相关 issue；当显示等可视行为发生变化时附上实物照片。若无法进行硬件测试，需明确说明。
+## 代理工作要求
 
-## 代码审查与合并规范
-每次进行审查或进行改动不可凭记忆，因为我会人工修改一部分。
+用户会手动修改代码，因此每次审查或修改前，必须重新读取当前文件并检查工作区状态。保留无关改动，以当前代码为依据，不可凭记忆判断。
