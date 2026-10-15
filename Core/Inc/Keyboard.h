@@ -17,6 +17,7 @@ void Keyboard_ScanISR(void);
 /* Main-loop consumer: one debounced press, or KEYBOARD_NO_KEY.
  * Holding a key does not repeat; all keys must be released to rearm. */
 char Keyboard_GetKey(void);
+uint8_t Keyboard_TakeStopRequest(void);
 
 #ifdef __cplusplus
 }

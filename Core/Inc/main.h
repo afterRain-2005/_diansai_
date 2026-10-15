@@ -49,6 +49,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -58,6 +60,10 @@ void Keyboard_TickISR(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define PWM_EN_Pin GPIO_PIN_1
+#define PWM_EN_GPIO_Port GPIOA
+#define INV_OFFLINE_Pin GPIO_PIN_3
+#define INV_OFFLINE_GPIO_Port GPIOA
 #define EXT_SPI2_SCK_Pin GPIO_PIN_13
 #define EXT_SPI2_SCK_GPIO_Port GPIOB
 #define EXT_SPI2_MOSI_Pin GPIO_PIN_15
@@ -68,8 +74,13 @@ void Keyboard_TickISR(void);
 #define OLED_DC_GPIO_Port GPIOD
 #define OLED_CS_Pin GPIO_PIN_2
 #define OLED_CS_GPIO_Port GPIOD
+#define RS_CTRL_Pin GPIO_PIN_6
+#define RS_CTRL_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+
+#define INV_BKIN_Pin GPIO_PIN_6
+#define INV_BKIN_GPIO_Port GPIOA
 
 /* USER CODE END Private defines */
 

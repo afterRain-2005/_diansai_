@@ -45,7 +45,7 @@ static void sample(uint16_t contacts, unsigned ticks)
 
 int main(void)
 {
-    const char expected[] = "123A456B789C*0#D";
+    const char expected[] = "D#0*C987B654A321";
     Keyboard_ScanISR(); /* Safe before initialization. */
     Keyboard_Init();
     assert(configured == 3U);
@@ -75,7 +75,7 @@ int main(void)
     sample(0U, 20U);
     sample(0x8000U, 20U);
     primask = 1U;
-    assert(Keyboard_GetKey() == 'D');
+    assert(Keyboard_GetKey() == expected[15]);
     assert(primask == 1U); /* Preserve caller's interrupt state. */
     primask = 0U;
     assert(Keyboard_GetKey() == KEYBOARD_NO_KEY && primask == 0U);
@@ -85,8 +85,15 @@ int main(void)
     sample(1U, 20U);
     sample(0U, 20U);
     sample(2U, 20U);
-    assert(Keyboard_GetKey() == '1');
+    assert(Keyboard_GetKey() == expected[0]);
     assert(Keyboard_GetKey() == KEYBOARD_NO_KEY);
+    sample(0U, 20U);
+    sample(1U, 20U);
+    sample(0U, 20U);
+    sample(1U << 4U, 20U);
+    assert(Keyboard_GetKey() == 'C');
+    assert(Keyboard_TakeStopRequest() == 1U);
+    assert(Keyboard_TakeStopRequest() == 0U);
     puts("keyboard_scan_check: PASS");
     return 0;
 }

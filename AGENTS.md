@@ -2,13 +2,15 @@
 
 ## 项目结构与模块组织
 
-本项目为 STM32G474VETx 固件，由 STM32CubeMX 生成，使用 Keil MDK 构建。当前应用程序初始化 SPI2，并在 128×64 的 SSD1306 OLED 上显示测试画面。
+本项目为 STM32G474VETx 固件，由 STM32CubeMX 生成，使用 Keil MDK 构建。当前应用为三相 SPWM 逆变器：TIM1 三相互补 PWM（50kHz 载波、BDTR 硬件死区、BKIN 故障封锁）、TIM5 调制节拍中断、ADC1 四通道 DMA 采样、4x4 键盘 + 128x64 SSD1306 OLED 参数菜单。
 
-- `Core/Src/`：应用程序入口、中断处理函数、HAL 初始化以及 `oled.c`；字模数据内嵌在 OLED 驱动中。
+- `Core/Src/`：应用程序入口、中断处理函数、HAL 初始化、`oled.c`、`Keyboard.c`、`Bipolar_PWM.c`（三相 SPWM 核心）、`inverter_menu.c`（表驱动菜单 + Flash 参数）。字模数据内嵌在 OLED 驱动中。
 - `Core/Inc/`：对应的公共头文件与 HAL 配置。
 - `Drivers/`：随工程附带的 STM32G4 HAL 与 CMSIS 依赖。避免进行与需求无关的厂商代码修改。
 - `MDK-ARM/`：Keil 工程、启动汇编、链接分散加载文件以及构建产物。
 - `g474_code.ioc`：CubeMX 的外设、引脚与时钟配置。
+
+逆变器引脚（改硬件接线时同步 `.ioc` 与 `main.h`）：TIM1 CH1/CH2/CH3 = PA8/PA9/PA10，CH1N/CH2N/CH3N = PA7/PB0/PB1，BKIN = PA6；TIM5 无输出引脚；ADC1 = PC0..PC3；键盘 = PE0..PE7；OLED = SPI2(PB13/PB15) + PD0/PD1/PD2；控制脚 PWM_EN=PA1、INV_OFFLINE=PA3、RS_CTRL=PB6。
 
 ## 构建、测试与开发命令
 

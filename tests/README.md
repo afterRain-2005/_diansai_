@@ -1,34 +1,27 @@
-# Keyboard verification
+# 主机验证
 
-From the repository root, with GCC on PATH:
+在仓库根目录执行：
 
 ```powershell
-gcc -std=c11 -Wall -Wextra -Werror -Itests/keyboard_mock -ICore/Inc Core/Src/Keyboard.c tests/keyboard_scan_check.c -o tests/keyboard_scan_check.exe
-.\tests\keyboard_scan_check.exe
+cmd /c tests\run_checks.cmd
 ```
 
-The host check covers all 16 positions, debounce, hold/release behavior,
-multi-key rejection, initialization, and interrupt-state preservation.
-It does not verify electrical settling, actual wiring, or the OLED.
+脚本会运行 MSVC 主机检查，覆盖死区编码、三相 PWM 相位和边界、故障关断与恢复、ADC RMS、PI 数值边界、Flash 参数记录和写入失败模拟、OLED 裁剪与 SPI 重试，以及键盘去抖和 C 键停机优先级。
+
+这些检查不能替代实际电气验证、ADC 标定、驱动器极性检查或功率级测试。
 
 On the STM32G474 board, connect rows R1–R4 to PE0–PE3 and columns C1–C4
 to PE4–PE7. `Keyboard_Init()` overrides CubeMX's push-pull/no-pull defaults
 with open-drain rows and pulled-up inputs; retain its call after GPIO init.
 No EXTI or additional timer configuration is needed. SysTick must remain 1 ms.
 
-Build target `g474_code` in Keil, flash, and check that the OLED shows
-`KEYBOARD TEST`, the last key, and a press count. Expected layout:
+当前库保留项目连接器方向，逻辑映射如下：
 
 ```text
-1 2 3 A
-4 5 6 B
-7 8 9 C
-* 0 # D
+D C B A
+# 9 6 3
+0 8 5 2
+* 7 4 1
 ```
 
-Press each position, hold it (count increases once), then release and press
-again (count increases again). Simultaneous presses are suppressed until
-all keys are released for about 20 ms. Adjust `keymap` in `Keyboard.c` if
-the physical keypad legends or connector order differ. The last key stays
-on screen after release. A single pending event is retained; additional
-presses can be dropped if the main loop is stalled.
+键盘只保留一个待处理事件，主循环长时间阻塞时后续按键可能丢失；C 键另设独立停机锁存。

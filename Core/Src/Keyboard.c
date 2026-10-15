@@ -13,6 +13,7 @@ static uint16_t frame;
 static uint16_t candidate;
 static volatile uint8_t ready;
 static volatile char pending_key;
+static volatile uint8_t stop_requested;
 
 void Keyboard_Init(void)
 {
@@ -38,6 +39,7 @@ void Keyboard_Init(void)
     frame = 0U;
     candidate = 0U;
     pending_key = KEYBOARD_NO_KEY;
+    stop_requested = 0U;
     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0, GPIO_PIN_RESET);
     ready = 1U;
 }
@@ -76,7 +78,9 @@ void Keyboard_ScanISR(void)
                 }
                 /* ponytail: one pending event; if main-loop stalls lose presses;
                  * migrate to a bounded event queue when every press must persist. */
-                if (pending_key == KEYBOARD_NO_KEY) pending_key = keymap[index];
+                if (keymap[index] == 'C') stop_requested = 1U;
+                if (pending_key == KEYBOARD_NO_KEY || keymap[index] == 'C')
+                    pending_key = keymap[index];
                 armed = 0U;
             }
         }
@@ -95,4 +99,16 @@ char Keyboard_GetKey(void)
     pending_key = KEYBOARD_NO_KEY;
     __set_PRIMASK(primask);
     return key;
+}
+
+uint8_t Keyboard_TakeStopRequest(void)
+{
+    uint32_t primask = __get_PRIMASK();
+    uint8_t requested;
+
+    __disable_irq();
+    requested = stop_requested;
+    stop_requested = 0U;
+    __set_PRIMASK(primask);
+    return requested;
 }

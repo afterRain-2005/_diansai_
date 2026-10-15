@@ -20,6 +20,7 @@
 
 /* ---------- 显存缓冲 ---------- */
 static uint8_t oled_buf[OLED_PAGES][OLED_WIDTH];
+static HAL_StatusTypeDef oled_status;
 
 /* ============================================================
  *  字库 8x16 ASCII (32..'Z')，未用字符以空格兜底
@@ -91,7 +92,9 @@ static const uint8_t Font8x16[][16] = {
  * ============================================================ */
 static HAL_StatusTypeDef OLED_SPI_Send(const uint8_t *data, uint16_t size)
 {
-    return HAL_SPI_Transmit(&hspi2, (uint8_t *)data, size, 1000U);
+    if (oled_status != HAL_OK) return oled_status;
+    oled_status = HAL_SPI_Transmit(&hspi2, (uint8_t *)data, size, 5U);
+    return oled_status;
 }
 
 static void OLED_WriteByte(uint8_t dat, uint8_t cmd)
@@ -148,6 +151,7 @@ void OLED_Clear(void)
 
 void OLED_Refresh(void)
 {
+    oled_status = HAL_OK;
     for (uint8_t page = 0; page < OLED_PAGES; page++) {
         OLED_WriteCmd(0xB0 + page);
         OLED_WriteCmd(0x00);
@@ -156,6 +160,7 @@ void OLED_Refresh(void)
         OLED_CS_Clr();
         (void)OLED_SPI_Send(oled_buf[page], OLED_WIDTH);
         OLED_CS_Set();
+        if (oled_status != HAL_OK) return;
     }
 }
 
@@ -177,6 +182,8 @@ void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t color)
 void OLED_ShowChar(uint8_t x, uint8_t y, char ch, uint8_t size)
 {
     (void)size;
+    if (x >= OLED_WIDTH || y >= OLED_HEIGHT) return;
+    if (ch >= 'a' && ch <= 'z') ch = (char)(ch - 'a' + 'A');
     if (ch < ' ' || ch > 'Z') ch = ' ';
     uint8_t idx = ch - ' ';
 
@@ -184,18 +191,20 @@ void OLED_ShowChar(uint8_t x, uint8_t y, char ch, uint8_t size)
         uint8_t col_top = Font8x16[idx][i];
         uint8_t col_bot = Font8x16[idx][i + 8];
         for (uint8_t bit = 0; bit < 8; bit++) {
-            OLED_DrawPoint(x + i, y + bit,     (col_top >> bit) & 0x01);
-            OLED_DrawPoint(x + i, y + bit + 8, (col_bot >> bit) & 0x01);
+            if ((uint16_t)x + i < OLED_WIDTH && (uint16_t)y + bit < OLED_HEIGHT)
+                OLED_DrawPoint((uint8_t)(x + i), (uint8_t)(y + bit), (col_top >> bit) & 0x01);
+            if ((uint16_t)x + i < OLED_WIDTH && (uint16_t)y + bit + 8U < OLED_HEIGHT)
+                OLED_DrawPoint((uint8_t)(x + i), (uint8_t)(y + bit + 8U), (col_bot >> bit) & 0x01);
         }
     }
 }
 
 void OLED_ShowString(uint8_t x, uint8_t y, const char *str, uint8_t size)
 {
-    while (*str) {
+    if (str == NULL || x >= OLED_WIDTH || y >= OLED_HEIGHT) return;
+    while (*str && (uint16_t)x + 8U <= OLED_WIDTH) {
         OLED_ShowChar(x, y, *str++, size);
         x += 8;
-        if (x + 8 > OLED_WIDTH) { x = 0; y += 16; }
     }
 }
 
@@ -244,14 +253,20 @@ void OLED_DrawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
  * ============================================================ */
 void OLED_DrawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t fill)
 {
+    uint16_t right = (uint16_t)x + w;
+    uint16_t bottom = (uint16_t)y + h;
+
+    if (w == 0U || h == 0U || x >= OLED_WIDTH || y >= OLED_HEIGHT) return;
+    if (right > OLED_WIDTH) right = OLED_WIDTH;
+    if (bottom > OLED_HEIGHT) bottom = OLED_HEIGHT;
     if (fill) {
-        for (uint8_t j = y; j < y + h && j < OLED_HEIGHT; j++)
-            for (uint8_t i = x; i < x + w && i < OLED_WIDTH; i++)
-                OLED_DrawPoint(i, j, 1);
+        for (uint16_t vertical = y; vertical < bottom; vertical++)
+            for (uint16_t horizontal = x; horizontal < right; horizontal++)
+                OLED_DrawPoint((uint8_t)horizontal, (uint8_t)vertical, 1);
     } else {
-        OLED_DrawLine(x,       y,       x+w-1, y      );
-        OLED_DrawLine(x,       y+h-1,   x+w-1, y+h-1  );
-        OLED_DrawLine(x,       y,       x,     y+h-1  );
-        OLED_DrawLine(x+w-1,   y,       x+w-1, y+h-1  );
+        OLED_DrawLine(x, y, (uint8_t)(right - 1U), y);
+        OLED_DrawLine(x, (uint8_t)(bottom - 1U), (uint8_t)(right - 1U), (uint8_t)(bottom - 1U));
+        OLED_DrawLine(x, y, x, (uint8_t)(bottom - 1U));
+        OLED_DrawLine((uint8_t)(right - 1U), y, (uint8_t)(right - 1U), (uint8_t)(bottom - 1U));
     }
 }

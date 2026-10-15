@@ -1,0 +1,17 @@
+../Tool_Box/Signal_Tools.c:10:6:fastFourierOperation	4
+../Tool_Box/Signal_Tools.c:34:6:initRotationFactor	2
+../Tool_Box/Signal_Tools.c:45:6:changePosition	4
+../Tool_Box/Signal_Tools.c:70:6:add	1
+../Tool_Box/Signal_Tools.c:77:6:mul	1
+../Tool_Box/Signal_Tools.c:84:6:sub	1
+../Tool_Box/Signal_Tools.c:91:9:c_plus	1
+../Tool_Box/Signal_Tools.c:101:9:c_sub	1
+../Tool_Box/Signal_Tools.c:111:9:c_mul	1
+../Tool_Box/Signal_Tools.c:121:9:c_div	1
+../Tool_Box/Signal_Tools.c:131:9:c_conjugate	1
+../Tool_Box/Signal_Tools.c:140:7:c_abs	2
+../Tool_Box/Signal_Tools.c:149:6:cArray_abs	2
+../Tool_Box/Signal_Tools.c:160:6:trans	5
+../Tool_Box/Signal_Tools.c:189:9:getWn_i	1
+../Tool_Box/Signal_Tools.c:202:6:fft	5
+../Tool_Box/Signal_Tools.c:237:6:ifft	3
