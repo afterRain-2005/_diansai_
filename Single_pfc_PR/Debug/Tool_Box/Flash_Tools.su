@@ -1,3 +1,0 @@
-../Tool_Box/Flash_Tools.c:9:17:GetSector	16	static
-../Tool_Box/Flash_Tools.c:21:14:Flash_Write	64	static
-../Tool_Box/Flash_Tools.c:57:6:Flash_Read	32	static

@@ -369,7 +369,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         else active_amplitude = target;
         Bipolar_pwm(INV_PERIOD, INV_SAMP_NUMBER);
 #if INV_CLOSED_LOOP_ENABLE
-        if (rms_sequence != control_rms_sequence && INV_AdcVrms <= 4095)
+        if (INV_CLOSED_LOOP_ADC_CHANNEL == 0U &&
+            rms_sequence != control_rms_sequence && INV_AdcVrms <= 4095)
         {
             control_rms_sequence = rms_sequence;
             Vout_Ctr((uint16_t)INV_AdcVrms,

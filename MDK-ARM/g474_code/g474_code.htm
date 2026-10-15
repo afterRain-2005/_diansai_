@@ -3,7 +3,7 @@
 <title>Static Call Graph - [g474_code\g474_code.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image g474_code\g474_code.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Thu Oct 15 18:53:00 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Thu Oct 15 19:15:03 2026
 <BR><P>
 <H3>Maximum Stack Usage =        400 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -791,12 +791,12 @@ Global Symbols
 <P><STRONG><a name="[ac]"></a>_printf_fp_dec_real</STRONG> (Thumb, 620 bytes, Stack size 104 bytes, _printf_fp_dec.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 324<LI>Call Chain = _printf_fp_dec_real &rArr; _fp_digits &rArr; _btod_etento &rArr; _btod_emul &rArr; _e2e
 </UL>
-<BR>[Calls]<UL><LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_locale
-<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
+<BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_post_padding
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_pre_padding
 <LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_fpclassify
 <LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_infnan
+<LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_locale
 </UL>
 <BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_fp_dec
 </UL>
@@ -978,7 +978,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_Start_DMA
 </UL>
 
-<P><STRONG><a name="[fe]"></a>Bipolar_pwm</STRONG> (Thumb, 424 bytes, Stack size 36 bytes, bipolar_pwm.o(.text.Bipolar_pwm))
+<P><STRONG><a name="[fe]"></a>Bipolar_pwm</STRONG> (Thumb, 428 bytes, Stack size 36 bytes, bipolar_pwm.o(.text.Bipolar_pwm))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = Bipolar_pwm
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
@@ -1076,7 +1076,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_DMAHalfConvCplt
 </UL>
 
-<P><STRONG><a name="[b8]"></a>HAL_ADC_ErrorCallback</STRONG> (Thumb, 152 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.HAL_ADC_ErrorCallback))
+<P><STRONG><a name="[b8]"></a>HAL_ADC_ErrorCallback</STRONG> (Thumb, 154 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.HAL_ADC_ErrorCallback))
 <BR><BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_DMAError
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_DMAConvCplt
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_IRQHandler
@@ -1377,7 +1377,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 
-<P><STRONG><a name="[f3]"></a>HAL_TIMEx_BreakCallback</STRONG> (Thumb, 154 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.HAL_TIMEx_BreakCallback))
+<P><STRONG><a name="[f3]"></a>HAL_TIMEx_BreakCallback</STRONG> (Thumb, 156 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.HAL_TIMEx_BreakCallback))
 <BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 
@@ -1511,7 +1511,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 
-<P><STRONG><a name="[f2]"></a>HAL_TIM_PeriodElapsedCallback</STRONG> (Thumb, 304 bytes, Stack size 16 bytes, bipolar_pwm.o(.text.HAL_TIM_PeriodElapsedCallback))
+<P><STRONG><a name="[f2]"></a>HAL_TIM_PeriodElapsedCallback</STRONG> (Thumb, 308 bytes, Stack size 16 bytes, bipolar_pwm.o(.text.HAL_TIM_PeriodElapsedCallback))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = HAL_TIM_PeriodElapsedCallback &rArr; Bipolar_pwm
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -1538,7 +1538,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[bd]"></a>INV_EmergencyStop</STRONG> (Thumb, 128 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.INV_EmergencyStop))
+<P><STRONG><a name="[bd]"></a>INV_EmergencyStop</STRONG> (Thumb, 130 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.INV_EmergencyStop))
 <BR><BR>[Called By]<UL><LI><a href="#[5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UsageFault_Handler
 <LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BusFault_Handler
 <LI><a href="#[3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MemManage_Handler
@@ -1553,7 +1553,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INV_Menu_Run
 </UL>
 
-<P><STRONG><a name="[101]"></a>INV_Init</STRONG> (Thumb, 508 bytes, Stack size 24 bytes, bipolar_pwm.o(.text.INV_Init))
+<P><STRONG><a name="[101]"></a>INV_Init</STRONG> (Thumb, 512 bytes, Stack size 24 bytes, bipolar_pwm.o(.text.INV_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = INV_Init &rArr; sin_duty_init &rArr; __hardfp_sinf &rArr; __mathlib_rredf2
 </UL>
 <BR>[Calls]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_Start_IT
@@ -1617,7 +1617,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INV_Menu_Run
 </UL>
 
-<P><STRONG><a name="[107]"></a>INV_OutputDisable</STRONG> (Thumb, 100 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.INV_OutputDisable))
+<P><STRONG><a name="[107]"></a>INV_OutputDisable</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, bipolar_pwm.o(.text.INV_OutputDisable))
 <BR><BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INV_Menu_Run
 <LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INV_Menu_Save
@@ -1636,7 +1636,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[116]"></a>INV_SafetyTick</STRONG> (Thumb, 404 bytes, Stack size 24 bytes, bipolar_pwm.o(.text.INV_SafetyTick))
+<P><STRONG><a name="[116]"></a>INV_SafetyTick</STRONG> (Thumb, 410 bytes, Stack size 24 bytes, bipolar_pwm.o(.text.INV_SafetyTick))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = INV_SafetyTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
@@ -1646,7 +1646,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Keyboard_TickISR
 </UL>
 
-<P><STRONG><a name="[110]"></a>INV_SamplingPause</STRONG> (Thumb, 238 bytes, Stack size 24 bytes, bipolar_pwm.o(.text.INV_SamplingPause))
+<P><STRONG><a name="[110]"></a>INV_SamplingPause</STRONG> (Thumb, 242 bytes, Stack size 24 bytes, bipolar_pwm.o(.text.INV_SamplingPause))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = INV_SamplingPause &rArr; HAL_ADC_Stop_DMA &rArr; ADC_ConversionStop
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_Stop_DMA
@@ -1906,7 +1906,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[102]"></a>sin_duty_init</STRONG> (Thumb, 944 bytes, Stack size 48 bytes, bipolar_pwm.o(.text.sin_duty_init))
+<P><STRONG><a name="[102]"></a>sin_duty_init</STRONG> (Thumb, 948 bytes, Stack size 48 bytes, bipolar_pwm.o(.text.sin_duty_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = sin_duty_init &rArr; __hardfp_sinf &rArr; __mathlib_rredf2
 </UL>
 <BR>[Calls]<UL><LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__hardfp_sinf
@@ -2062,14 +2062,14 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[108]"></a>LatchFault</STRONG> (Thumb, 154 bytes, Stack size 8 bytes, bipolar_pwm.o(.text.LatchFault))
+<P><STRONG><a name="[108]"></a>LatchFault</STRONG> (Thumb, 156 bytes, Stack size 8 bytes, bipolar_pwm.o(.text.LatchFault))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = LatchFault
 </UL>
 <BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INV_Init
 <LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;INV_OutputEnable
 </UL>
 
-<P><STRONG><a name="[c7]"></a>ProcessAdcBlock</STRONG> (Thumb, 560 bytes, Stack size 88 bytes, bipolar_pwm.o(.text.ProcessAdcBlock))
+<P><STRONG><a name="[c7]"></a>ProcessAdcBlock</STRONG> (Thumb, 572 bytes, Stack size 88 bytes, bipolar_pwm.o(.text.ProcessAdcBlock))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = ProcessAdcBlock
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick

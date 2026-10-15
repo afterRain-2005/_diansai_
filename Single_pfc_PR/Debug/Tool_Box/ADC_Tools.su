@@ -1,9 +1,0 @@
-../Tool_Box/ADC_Tools.c:12:11:initQueue	24	static
-../Tool_Box/ADC_Tools.c:18:5:isEmpty	8	static
-../Tool_Box/ADC_Tools.c:22:5:enQueue	16	static
-../Tool_Box/ADC_Tools.c:31:5:deQueue	16	static
-../Tool_Box/ADC_Tools.c:39:5:printQueue	16	static
-../Tool_Box/ADC_Tools.c:51:5:getFront	16	static
-../Tool_Box/ADC_Tools.c:59:5:getRear	24	static
-../Tool_Box/ADC_Tools.c:68:5:queueLength	16	static
-../Tool_Box/ADC_Tools.c:72:6:clearQueue	16	static

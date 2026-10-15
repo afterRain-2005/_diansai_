@@ -9,6 +9,7 @@
 - 死区编码、RMS、CRC32、Flash 页面映射和参数记录均增加边界检查；Flash 参数使用两个 4 KB 槽位、CRC、版本和序号，掉电或半写入时保留上一份有效记录。
 - 键盘、OLED 增加边界保护；OLED SPI 超时从 1 s 降为 5 ms，失败帧停止发送并允许下次刷新重试。C 键停止请求具有优先级。
 - 链接脚本和 Keil IROM 均保留 Flash 末尾 8 KB 参数区（应用地址范围 `0x08000000..0x0807DFFF`）。
+- 从旧 `Single_pfc_PR` 工程移植了无硬件依赖的 PI、Clarke/反 Clarke、Park/反 Park 算法到 `inverter_control_tools.[ch]`；旧工程的 F4 HAL、引脚和启动文件没有带入。
 
 ## 当前硬件引脚
 
@@ -41,3 +42,5 @@
 ## 上电前必须完成的实机检查
 
 当前工程仍是开环 SPWM；没有根据未知硬件臆造母线过压、过流、短路或欠压阈值，也没有自动启用 IWDG。首次上电应使用限流电源、断开功率级或先接示波器确认三相互补波形、死区、BKIN 关断和驱动器使能时序，再接入低压母线和负载。确认传感器标定、驱动器故障逻辑、隔离距离和功率器件额定值后，才能增加闭环和硬件相关保护阈值。
+
+闭环代码已经接入 `HAL_TIM_PeriodElapsedCallback()`，但 `INV_CLOSED_LOOP_ENABLE` 默认保持 0。完成 ADC 标定并填写 `Bipolar_PWM.h` 文件开头的目标值、PI 参数和反馈通道后，再将其改为 1；输出仍需由键盘 A 手动使能，且幅值受 `INV_CLOSED_LOOP_MAX_AMP` 限制。

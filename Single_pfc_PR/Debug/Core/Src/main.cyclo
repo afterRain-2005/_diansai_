@@ -1,6 +1,0 @@
-../Core/Src/main.c:139:5:main	2
-../Core/Src/main.c:194:6:HAL_TIM_PeriodElapsedCallback	18
-../Core/Src/main.c:304:6:init	1
-../Core/Src/main.c:330:6:vofa_send	1
-../Core/Src/main.c:349:6:SystemClock_Config	3
-../Core/Src/main.c:398:6:Error_Handler	1

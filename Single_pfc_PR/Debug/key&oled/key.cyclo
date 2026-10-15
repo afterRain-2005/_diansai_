@@ -1,2 +1,0 @@
-../key&oled/key.c:11:9:get_keyboard_value	9
-../key&oled/key.c:50:6:HAL_GPIO_EXTI_Callback	2

@@ -16,6 +16,18 @@
 #define INV_ADC_HALF_FRAMES      16U
 #define INV_ADC_TIMEOUT_MS       10U
 #define INV_CONTROL_TIMEOUT_MS   100U
+#define INV_DC_BUS_NOMINAL_V     48.0f
+#define INV_DC_BUS_MIN_V         40.0f
+#define INV_DC_BUS_MAX_V         60.0f
+#define INV_OUTPUT_RMS_TARGET_V  24.0f
+#define INV_OUTPUT_MAX_RMS_V     30.0f
+#define INV_VOLTAGE_SENSOR_GAIN  10.0f
+#define INV_VOLTAGE_SENSOR_OFFSET_V 0.0f
+#define INV_CURRENT_SENSOR_GAIN  0.1f
+#define INV_CURRENT_SENSOR_OFFSET_V 1.65f
+#define INV_OUTPUT_FILTER_L_H    0.001f
+#define INV_OUTPUT_FILTER_C_F    0.000001f
+#define INV_OUTPUT_LOAD_MAX_OHM  10.0f
 #define INV_FREQ_MIN             30
 #define INV_FREQ_MAX             80
 #define INV_AMP_MIN              0
@@ -23,11 +35,11 @@
 #define INV_FREQ_DEFAULT         50
 #define INV_AMP_DEFAULT          10
 #define INV_RMS_REMOVE_DC        1
-#define INV_VOLTAGE_GAIN         10.0f
+#define INV_VOLTAGE_GAIN         INV_VOLTAGE_SENSOR_GAIN
 #define INV_ADC_REFERENCE_V      3.3f
 #define INV_VOLTAGE_CALIBRATED    0
 
-#define INV_CLOSED_LOOP_ENABLE          0
+#define INV_CLOSED_LOOP_ENABLE          1
 #define INV_CLOSED_LOOP_ADC_CHANNEL     0U
 #define INV_CLOSED_LOOP_TARGET_ADC_RMS  1000U
 #define INV_CLOSED_LOOP_KP              1000.0f
