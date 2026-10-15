@@ -384,10 +384,11 @@ HAL_StatusTypeDef INV_Init(void)
      */
     INV_OutputDisable();
     initialized = 0U;
+    /* 中心对齐时 ARR 就是单程上限；DIR 随计数方向变化，不作为固定配置检查。 */
     if (INV_FaultFlags != 0U || htim1.Instance != TIM1 || htim5.Instance != TIM5 ||
         hadc1.Instance != ADC1 || SystemCoreClock != INV_TIM_CLK ||
-        TIM1->PSC != 0U || TIM1->ARR != INV_PERIOD - 1U ||
-        (TIM1->CR1 & (TIM_CR1_CKD | TIM_CR1_CMS | TIM_CR1_DIR)) != 0U) goto init_error;
+        TIM1->PSC != 0U || TIM1->ARR != INV_PERIOD ||
+        (TIM1->CR1 & (TIM_CR1_CKD | TIM_CR1_CMS)) != TIM_COUNTERMODE_CENTERALIGNED1) goto init_error;
     sin_duty_init(INV_PERIOD, INV_SAMP_NUMBER);
     if (INV_SetDeadTime(INV_DEAD_TIME_NS) != HAL_OK) goto init_error;
     INV_SetFrequency(INV_Freq);

@@ -4,12 +4,19 @@
 #include "main.h"
 #include <stdint.h>
 
-#define INV_TIM_CLK              170000000UL
-#define INV_CARRIER_HZ           50000UL
-#define INV_PERIOD              (INV_TIM_CLK / INV_CARRIER_HZ)
+/* 对应当前 .ioc：HSE 8 MHz 直供 SYSCLK，APB1/APB2 均不分频，TIM1/TIM5 PSC=0。
+ * TIM1 为中心对齐模式：INV_PERIOD 表示 ARR（单程计数上限），完整载波需 2*ARR 个计数。
+ * 修改计数模式时须同步调整源文件初始化检查和 .ioc。
+ */
+#define INV_TIM_CLK              8000000UL
+#define INV_PERIOD              400UL
+#define INV_CARRIER_HZ           (INV_TIM_CLK / (2UL * INV_PERIOD)) /* 10000 Hz */
 #define INV_SAMP_NUMBER          360
-#define INV_DEAD_TIME_NS         1000
-#define INV_DEAD_TIME_DTG        0x95U
+/* .ioc 的 DeadTime=149 为 DTG 编码而非纳秒；CKD=DIV1 时对应 170/8MHz=21.25 us。
+ * 初始化会用 INV_DEAD_TIME_NS 重新编码并覆盖 DTG，因此两者必须一致。
+ */
+#define INV_DEAD_TIME_NS         21250
+#define INV_DEAD_TIME_DTG        0x95U /* 十进制 149 */
 #define INV_MIN_GATE_PULSE_NS    200U
 #define INV_SOFT_START_MS        500U
 #define INV_ADC_CHANNELS         4U
