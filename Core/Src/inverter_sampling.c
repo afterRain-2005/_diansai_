@@ -16,7 +16,7 @@ static float raw_offset[INV_SAMPLE_CHANNELS];
 
 float INV_SamplingConvert(uint16_t raw, float k, float b)
 {
-    return k * raw + b;
+    return k * raw - b;
 }
 
 void INV_SamplingNotifyCycle(void)

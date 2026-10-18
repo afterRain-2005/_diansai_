@@ -3,7 +3,7 @@
 <title>Static Call Graph - [g474_code\g474_code.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image g474_code\g474_code.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sun Oct 18 18:35:43 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sun Oct 18 18:57:42 2026
 <BR><P>
 <H3>Maximum Stack Usage =        360 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -897,16 +897,14 @@ Global Symbols
 <P><STRONG><a name="[149]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
 
 <P><STRONG><a name="[1c]"></a>ADC1_2_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32g4xx_it.o(.text.ADC1_2_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = ADC1_2_IRQHandler &rArr; HAL_ADC_IRQHandler &rArr; HAL_ADC_ConvCpltCallback &rArr; SamplingProcessFrame
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = ADC1_2_IRQHandler &rArr; HAL_ADC_IRQHandler
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g474xx.o(RESET)
 </UL>
 <P><STRONG><a name="[73]"></a>ADC_DMAConvCplt</STRONG> (Thumb, 98 bytes, Stack size 0 bytes, stm32g4xx_hal_adc.o(.text.ADC_DMAConvCplt))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = ADC_DMAConvCplt &rArr; HAL_ADC_ConvCpltCallback &rArr; SamplingProcessFrame
-</UL>
-<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ErrorCallback
+<BR><BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ErrorCallback
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConvCpltCallback
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> stm32g4xx_hal_adc.o(.text.HAL_ADC_Start_DMA)
@@ -917,9 +915,7 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> stm32g4xx_hal_adc.o(.text.HAL_ADC_Start_DMA)
 </UL>
 <P><STRONG><a name="[74]"></a>ADC_DMAHalfConvCplt</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32g4xx_hal_adc.o(.text.ADC_DMAHalfConvCplt))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = ADC_DMAHalfConvCplt &rArr; HAL_ADC_ConvHalfCpltCallback &rArr; SamplingProcessFrame
-</UL>
-<BR>[Calls]<UL><LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConvHalfCpltCallback
+<BR><BR>[Calls]<UL><LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConvHalfCpltCallback
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> stm32g4xx_hal_adc.o(.text.HAL_ADC_Start_DMA)
 </UL>
@@ -1009,18 +1005,14 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b3]"></a>HAL_ADC_ConvCpltCallback</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, inverter_sampling.o(.text.HAL_ADC_ConvCpltCallback))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = HAL_ADC_ConvCpltCallback &rArr; SamplingProcessFrame
-</UL>
-<BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SamplingProcessFrame
+<BR><BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SamplingProcessFrame
 </UL>
 <BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_DMAConvCplt
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_IRQHandler
 </UL>
 
 <P><STRONG><a name="[b4]"></a>HAL_ADC_ConvHalfCpltCallback</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, inverter_sampling.o(.text.HAL_ADC_ConvHalfCpltCallback))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = HAL_ADC_ConvHalfCpltCallback &rArr; SamplingProcessFrame
-</UL>
-<BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SamplingProcessFrame
+<BR><BR>[Calls]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SamplingProcessFrame
 </UL>
 <BR>[Called By]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_DMAHalfConvCplt
 </UL>
@@ -1032,7 +1024,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b1]"></a>HAL_ADC_IRQHandler</STRONG> (Thumb, 826 bytes, Stack size 40 bytes, stm32g4xx_hal_adc.o(.text.HAL_ADC_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = HAL_ADC_IRQHandler &rArr; HAL_ADC_ConvCpltCallback &rArr; SamplingProcessFrame
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = HAL_ADC_IRQHandler
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADCEx_InjectedQueueOverflowCallback
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADCEx_LevelOutOfWindow3Callback
@@ -1474,7 +1466,7 @@ Global Symbols
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bipolar_pwm
 </UL>
 
-<P><STRONG><a name="[fd]"></a>INV_SamplingStart</STRONG> (Thumb, 156 bytes, Stack size 64 bytes, inverter_sampling.o(.text.INV_SamplingStart))
+<P><STRONG><a name="[fd]"></a>INV_SamplingStart</STRONG> (Thumb, 154 bytes, Stack size 64 bytes, inverter_sampling.o(.text.INV_SamplingStart))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112 + Unknown Stack Size
 <LI>Call Chain = INV_SamplingStart &rArr; HAL_ADC_Start_DMA &rArr; HAL_DMA_Start_IT
 </UL>
@@ -1823,10 +1815,8 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[be]"></a>SamplingProcessFrame</STRONG> (Thumb, 264 bytes, Stack size 16 bytes, inverter_sampling.o(.text.SamplingProcessFrame))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = SamplingProcessFrame
-</UL>
-<BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConvCpltCallback
+<P><STRONG><a name="[be]"></a>SamplingProcessFrame</STRONG> (Thumb, 224 bytes, Stack size 0 bytes, inverter_sampling.o(.text.SamplingProcessFrame))
+<BR><BR>[Called By]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConvCpltCallback
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_ConvHalfCpltCallback
 </UL>
 

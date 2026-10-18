@@ -14,12 +14,12 @@ enum
 /* 一次线性拟合：实际量 = K * ADC原始计数 + B。
  * 占位值尚未标定，换算结果仍是 ADC 计数单位。
  */
-#define INV_SAMPLE_V1_K 1.0f
-#define INV_SAMPLE_V1_B 0.0f
-#define INV_SAMPLE_V2_K 1.0f
-#define INV_SAMPLE_V2_B 0.0f
-#define INV_SAMPLE_I_K  1.0f
-#define INV_SAMPLE_I_B  0.0f
+#define INV_SAMPLE_V1_K 0.0694317f
+#define INV_SAMPLE_V1_B 1.660f
+#define INV_SAMPLE_V2_K 0.0672282f
+#define INV_SAMPLE_V2_B 1.667f
+#define INV_SAMPLE_I_K  0.00263259f
+#define INV_SAMPLE_I_B  1.660f
 
 typedef struct
 {

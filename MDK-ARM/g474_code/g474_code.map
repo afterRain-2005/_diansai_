@@ -1831,7 +1831,7 @@ Removing Unused input sections from the image.
     Removing inverter_sampling.o(.text.INV_SamplingConvert), (18 bytes).
     Removing inverter_sampling.o(.ARM.exidx.text.INV_SamplingConvert), (8 bytes).
     Removing inverter_sampling.o(.ARM.exidx.text.INV_SamplingNotifyCycle), (8 bytes).
-    Removing inverter_sampling.o(.text.INV_SamplingUpdateOffset), (122 bytes).
+    Removing inverter_sampling.o(.text.INV_SamplingUpdateOffset), (100 bytes).
     Removing inverter_sampling.o(.ARM.exidx.text.INV_SamplingUpdateOffset), (8 bytes).
     Removing inverter_sampling.o(.ARM.exidx.text.INV_SamplingStart), (8 bytes).
     Removing inverter_sampling.o(.text.INV_SamplingStop), (34 bytes).
@@ -2827,7 +2827,7 @@ Removing Unused input sections from the image.
     Removing system_stm32g4xx.o(.ARM.exidx.text.SystemCoreClockUpdate), (8 bytes).
     Removing system_stm32g4xx.o(.rodata.APBPrescTable), (8 bytes).
 
-1045 unused section(s) (total 63360 bytes) removed from the image.
+1045 unused section(s) (total 63338 bytes) removed from the image.
 
 ==============================================================================
 
@@ -3181,65 +3181,65 @@ Image Symbol Table
     SPI_WaitFlagStateUntilTimeout            0x0800633d   Thumb Code   214  stm32g4xx_hal_spi.o(.text.SPI_WaitFlagStateUntilTimeout)
     [Anonymous Symbol]                       0x0800633c   Section        0  stm32g4xx_hal_spi.o(.text.SPI_WaitFlagStateUntilTimeout)
     [Anonymous Symbol]                       0x08006414   Section        0  stm32g4xx_it.o(.text.SVC_Handler)
-    SamplingProcessFrame                     0x08006419   Thumb Code   264  inverter_sampling.o(.text.SamplingProcessFrame)
+    SamplingProcessFrame                     0x08006419   Thumb Code   224  inverter_sampling.o(.text.SamplingProcessFrame)
     [Anonymous Symbol]                       0x08006418   Section        0  inverter_sampling.o(.text.SamplingProcessFrame)
-    [Anonymous Symbol]                       0x08006520   Section        0  stm32g4xx_it.o(.text.SysTick_Handler)
-    [Anonymous Symbol]                       0x08006530   Section        0  system_stm32g4xx.o(.text.SystemInit)
-    [Anonymous Symbol]                       0x08006544   Section        0  stm32g4xx_it.o(.text.TIM1_BRK_TIM15_IRQHandler)
-    [Anonymous Symbol]                       0x08006550   Section        0  stm32g4xx_it.o(.text.TIM5_IRQHandler)
-    [Anonymous Symbol]                       0x0800655c   Section        0  stm32g4xx_hal_tim.o(.text.TIM_Base_SetConfig)
-    [Anonymous Symbol]                       0x080066a4   Section        0  stm32g4xx_it.o(.text.UsageFault_Handler)
-    [Anonymous Symbol]                       0x080066b4   Section        0  main.o(.text.main)
-    CL$$btod_d2e                             0x08006d34   Section       62  btod.o(CL$$btod_d2e)
-    CL$$btod_d2e_denorm_low                  0x08006d72   Section       70  btod.o(CL$$btod_d2e_denorm_low)
-    CL$$btod_d2e_norm_op1                    0x08006db8   Section       96  btod.o(CL$$btod_d2e_norm_op1)
-    CL$$btod_div_common                      0x08006e18   Section      824  btod.o(CL$$btod_div_common)
-    CL$$btod_e2e                             0x08007150   Section      220  btod.o(CL$$btod_e2e)
-    CL$$btod_ediv                            0x0800722c   Section       42  btod.o(CL$$btod_ediv)
-    CL$$btod_emul                            0x08007256   Section       42  btod.o(CL$$btod_emul)
-    CL$$btod_mult_common                     0x08007280   Section      580  btod.o(CL$$btod_mult_common)
-    i.__ARM_fpclassify                       0x080074c4   Section        0  fpclassify.o(i.__ARM_fpclassify)
-    i.__ARM_fpclassifyf                      0x080074f4   Section        0  fpclassifyf.o(i.__ARM_fpclassifyf)
-    i.__hardfp_sinf                          0x0800751c   Section        0  sinf.o(i.__hardfp_sinf)
-    i.__mathlib_flt_infnan                   0x080076ac   Section        0  funder.o(i.__mathlib_flt_infnan)
-    i.__mathlib_flt_invalid                  0x080076b4   Section        0  funder.o(i.__mathlib_flt_invalid)
-    i.__mathlib_flt_underflow                0x080076c4   Section        0  funder.o(i.__mathlib_flt_underflow)
-    i.__mathlib_rredf2                       0x080076d4   Section        0  rredf.o(i.__mathlib_rredf2)
-    i._is_digit                              0x08007828   Section        0  __printf_wp.o(i._is_digit)
-    locale$$code                             0x08007838   Section       44  lc_numeric_c.o(locale$$code)
-    $v0                                      0x08007864   Number         0  fpinit.o(x$fpl$fpinit)
-    x$fpl$fpinit                             0x08007864   Section       26  fpinit.o(x$fpl$fpinit)
-    $v0                                      0x0800787e   Number         0  printf1.o(x$fpl$printf1)
-    x$fpl$printf1                            0x0800787e   Section        4  printf1.o(x$fpl$printf1)
-    $v0                                      0x08007882   Number         0  printf2.o(x$fpl$printf2)
-    x$fpl$printf2                            0x08007882   Section        4  printf2.o(x$fpl$printf2)
-    maptable                                 0x08007886   Data          17  __printf_flags_ss_wp.o(.constdata)
-    .constdata                               0x08007886   Section       17  __printf_flags_ss_wp.o(.constdata)
-    x$fpl$usenofp                            0x08007886   Section        0  usenofp.o(x$fpl$usenofp)
-    lc_hextab                                0x08007897   Data          19  _printf_fp_hex.o(.constdata)
-    .constdata                               0x08007897   Section       38  _printf_fp_hex.o(.constdata)
-    uc_hextab                                0x080078aa   Data          19  _printf_fp_hex.o(.constdata)
-    twooverpi                                0x080078c0   Data          32  rredf.o(.constdata)
-    .constdata                               0x080078c0   Section       32  rredf.o(.constdata)
-    tenpwrs_x                                0x080078e0   Data          60  bigflt0.o(.constdata)
-    .constdata                               0x080078e0   Section      148  bigflt0.o(.constdata)
-    tenpwrs_i                                0x0800791c   Data          64  bigflt0.o(.constdata)
-    Font8x16                                 0x08007984   Data         944  oled.o(.rodata.Font8x16)
-    [Anonymous Symbol]                       0x08007984   Section        0  oled.o(.rodata.Font8x16)
-    keymap                                   0x08007d34   Data          17  keyboard.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08007d34   Section        0  keyboard.o(.rodata.str1.1)
-    .L.str.8                                 0x08007d45   Data          13  inverter_menu.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08007d45   Section        0  inverter_menu.o(.rodata.str1.1)
-    .L.str.9                                 0x08007d52   Data          15  inverter_menu.o(.rodata.str1.1)
-    .L.str.6                                 0x08007d61   Data          15  inverter_menu.o(.rodata.str1.1)
-    .L.str.7                                 0x08007d70   Data          14  inverter_menu.o(.rodata.str1.1)
-    locale$$data                             0x08007da0   Section       28  lc_numeric_c.o(locale$$data)
-    __lcnum_c_name                           0x08007da4   Data           2  lc_numeric_c.o(locale$$data)
-    __lcnum_c_start                          0x08007dac   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_point                          0x08007db8   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_thousands                      0x08007dba   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_grouping                       0x08007dbb   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_end                            0x08007dbc   Data           0  lc_numeric_c.o(locale$$data)
+    [Anonymous Symbol]                       0x080064f8   Section        0  stm32g4xx_it.o(.text.SysTick_Handler)
+    [Anonymous Symbol]                       0x08006508   Section        0  system_stm32g4xx.o(.text.SystemInit)
+    [Anonymous Symbol]                       0x0800651c   Section        0  stm32g4xx_it.o(.text.TIM1_BRK_TIM15_IRQHandler)
+    [Anonymous Symbol]                       0x08006528   Section        0  stm32g4xx_it.o(.text.TIM5_IRQHandler)
+    [Anonymous Symbol]                       0x08006534   Section        0  stm32g4xx_hal_tim.o(.text.TIM_Base_SetConfig)
+    [Anonymous Symbol]                       0x0800667c   Section        0  stm32g4xx_it.o(.text.UsageFault_Handler)
+    [Anonymous Symbol]                       0x0800668c   Section        0  main.o(.text.main)
+    CL$$btod_d2e                             0x08006d0c   Section       62  btod.o(CL$$btod_d2e)
+    CL$$btod_d2e_denorm_low                  0x08006d4a   Section       70  btod.o(CL$$btod_d2e_denorm_low)
+    CL$$btod_d2e_norm_op1                    0x08006d90   Section       96  btod.o(CL$$btod_d2e_norm_op1)
+    CL$$btod_div_common                      0x08006df0   Section      824  btod.o(CL$$btod_div_common)
+    CL$$btod_e2e                             0x08007128   Section      220  btod.o(CL$$btod_e2e)
+    CL$$btod_ediv                            0x08007204   Section       42  btod.o(CL$$btod_ediv)
+    CL$$btod_emul                            0x0800722e   Section       42  btod.o(CL$$btod_emul)
+    CL$$btod_mult_common                     0x08007258   Section      580  btod.o(CL$$btod_mult_common)
+    i.__ARM_fpclassify                       0x0800749c   Section        0  fpclassify.o(i.__ARM_fpclassify)
+    i.__ARM_fpclassifyf                      0x080074cc   Section        0  fpclassifyf.o(i.__ARM_fpclassifyf)
+    i.__hardfp_sinf                          0x080074f4   Section        0  sinf.o(i.__hardfp_sinf)
+    i.__mathlib_flt_infnan                   0x08007684   Section        0  funder.o(i.__mathlib_flt_infnan)
+    i.__mathlib_flt_invalid                  0x0800768c   Section        0  funder.o(i.__mathlib_flt_invalid)
+    i.__mathlib_flt_underflow                0x0800769c   Section        0  funder.o(i.__mathlib_flt_underflow)
+    i.__mathlib_rredf2                       0x080076ac   Section        0  rredf.o(i.__mathlib_rredf2)
+    i._is_digit                              0x08007800   Section        0  __printf_wp.o(i._is_digit)
+    locale$$code                             0x08007810   Section       44  lc_numeric_c.o(locale$$code)
+    $v0                                      0x0800783c   Number         0  fpinit.o(x$fpl$fpinit)
+    x$fpl$fpinit                             0x0800783c   Section       26  fpinit.o(x$fpl$fpinit)
+    $v0                                      0x08007856   Number         0  printf1.o(x$fpl$printf1)
+    x$fpl$printf1                            0x08007856   Section        4  printf1.o(x$fpl$printf1)
+    $v0                                      0x0800785a   Number         0  printf2.o(x$fpl$printf2)
+    x$fpl$printf2                            0x0800785a   Section        4  printf2.o(x$fpl$printf2)
+    maptable                                 0x0800785e   Data          17  __printf_flags_ss_wp.o(.constdata)
+    .constdata                               0x0800785e   Section       17  __printf_flags_ss_wp.o(.constdata)
+    x$fpl$usenofp                            0x0800785e   Section        0  usenofp.o(x$fpl$usenofp)
+    lc_hextab                                0x0800786f   Data          19  _printf_fp_hex.o(.constdata)
+    .constdata                               0x0800786f   Section       38  _printf_fp_hex.o(.constdata)
+    uc_hextab                                0x08007882   Data          19  _printf_fp_hex.o(.constdata)
+    twooverpi                                0x08007898   Data          32  rredf.o(.constdata)
+    .constdata                               0x08007898   Section       32  rredf.o(.constdata)
+    tenpwrs_x                                0x080078b8   Data          60  bigflt0.o(.constdata)
+    .constdata                               0x080078b8   Section      148  bigflt0.o(.constdata)
+    tenpwrs_i                                0x080078f4   Data          64  bigflt0.o(.constdata)
+    Font8x16                                 0x0800795c   Data         944  oled.o(.rodata.Font8x16)
+    [Anonymous Symbol]                       0x0800795c   Section        0  oled.o(.rodata.Font8x16)
+    keymap                                   0x08007d0c   Data          17  keyboard.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08007d0c   Section        0  keyboard.o(.rodata.str1.1)
+    .L.str.8                                 0x08007d1d   Data          13  inverter_menu.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08007d1d   Section        0  inverter_menu.o(.rodata.str1.1)
+    .L.str.9                                 0x08007d2a   Data          15  inverter_menu.o(.rodata.str1.1)
+    .L.str.6                                 0x08007d39   Data          15  inverter_menu.o(.rodata.str1.1)
+    .L.str.7                                 0x08007d48   Data          14  inverter_menu.o(.rodata.str1.1)
+    locale$$data                             0x08007d78   Section       28  lc_numeric_c.o(locale$$data)
+    __lcnum_c_name                           0x08007d7c   Data           2  lc_numeric_c.o(locale$$data)
+    __lcnum_c_start                          0x08007d84   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_point                          0x08007d90   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_thousands                      0x08007d92   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_grouping                       0x08007d93   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_end                            0x08007d94   Data           0  lc_numeric_c.o(locale$$data)
     .L_MergedGlobals                         0x20000000   Data           8  stm32g4xx_hal.o(.data..L_MergedGlobals)
     [Anonymous Symbol]                       0x20000000   Section        0  stm32g4xx_hal.o(.data..L_MergedGlobals)
     .bss                                     0x20000018   Section       96  libspace.o(.bss)
@@ -3260,29 +3260,28 @@ Image Symbol Table
     rms_count                                0x20000090   Data           4  inverter_control_tools.o(.bss..L_MergedGlobals)
     voltage_integral                         0x20000094   Data           4  inverter_control_tools.o(.bss..L_MergedGlobals)
     rms_square_sum                           0x200000a0   Data           8  inverter_control_tools.o(.bss..L_MergedGlobals)
-    .L_MergedGlobals                         0x200000a8   Data         104  inverter_sampling.o(.bss..L_MergedGlobals)
+    .L_MergedGlobals                         0x200000a8   Data         100  inverter_sampling.o(.bss..L_MergedGlobals)
     cycle_synced                             0x200000a8   Data           1  inverter_sampling.o(.bss..L_MergedGlobals)
     [Anonymous Symbol]                       0x200000a8   Section        0  inverter_sampling.o(.bss..L_MergedGlobals)
-    sampling_cycle                           0x200000ac   Data           4  inverter_sampling.o(.bss..L_MergedGlobals)
-    previous_cycle                           0x200000b0   Data           4  inverter_sampling.o(.bss..L_MergedGlobals)
-    cycle_count                              0x200000b4   Data           4  inverter_sampling.o(.bss..L_MergedGlobals)
-    cycle_sum                                0x200000b8   Data          12  inverter_sampling.o(.bss..L_MergedGlobals)
-    raw_offset                               0x200000c4   Data          12  inverter_sampling.o(.bss..L_MergedGlobals)
-    sampling_dma                             0x200000d0   Data          12  inverter_sampling.o(.bss..L_MergedGlobals)
-    sampling_data                            0x200000dc   Data          52  inverter_sampling.o(.bss..L_MergedGlobals)
-    oled_buf                                 0x200002d8   Data        1024  oled.o(.bss.oled_buf)
-    [Anonymous Symbol]                       0x200002d8   Section        0  oled.o(.bss.oled_buf)
-    oled_status                              0x200006d8   Data           1  oled.o(.bss.oled_status)
-    [Anonymous Symbol]                       0x200006d8   Section        0  oled.o(.bss.oled_status)
-    phase_index                              0x200006dc   Data           4  bipolar_pwm.o(.bss.phase_index)
-    [Anonymous Symbol]                       0x200006dc   Section        0  bipolar_pwm.o(.bss.phase_index)
-    sine_table                               0x200006e0   Data         720  bipolar_pwm.o(.bss.sine_table)
-    [Anonymous Symbol]                       0x200006e0   Section        0  bipolar_pwm.o(.bss.sine_table)
-    Heap_Mem                                 0x200009b8   Data         512  startup_stm32g474xx.o(HEAP)
-    HEAP                                     0x200009b8   Section      512  startup_stm32g474xx.o(HEAP)
-    Stack_Mem                                0x20000bb8   Data        1024  startup_stm32g474xx.o(STACK)
-    STACK                                    0x20000bb8   Section     1024  startup_stm32g474xx.o(STACK)
-    __initial_sp                             0x20000fb8   Data           0  startup_stm32g474xx.o(STACK)
+    cycle_count                              0x200000ac   Data           1  inverter_sampling.o(.bss..L_MergedGlobals)
+    sampling_cycle                           0x200000b0   Data           4  inverter_sampling.o(.bss..L_MergedGlobals)
+    cycle_sum                                0x200000b4   Data          12  inverter_sampling.o(.bss..L_MergedGlobals)
+    raw_offset                               0x200000c0   Data          12  inverter_sampling.o(.bss..L_MergedGlobals)
+    sampling_dma                             0x200000cc   Data          12  inverter_sampling.o(.bss..L_MergedGlobals)
+    sampling_data                            0x200000d8   Data          52  inverter_sampling.o(.bss..L_MergedGlobals)
+    oled_buf                                 0x200002d4   Data        1024  oled.o(.bss.oled_buf)
+    [Anonymous Symbol]                       0x200002d4   Section        0  oled.o(.bss.oled_buf)
+    oled_status                              0x200006d4   Data           1  oled.o(.bss.oled_status)
+    [Anonymous Symbol]                       0x200006d4   Section        0  oled.o(.bss.oled_status)
+    phase_index                              0x200006d8   Data           4  bipolar_pwm.o(.bss.phase_index)
+    [Anonymous Symbol]                       0x200006d8   Section        0  bipolar_pwm.o(.bss.phase_index)
+    sine_table                               0x200006dc   Data         720  bipolar_pwm.o(.bss.sine_table)
+    [Anonymous Symbol]                       0x200006dc   Section        0  bipolar_pwm.o(.bss.sine_table)
+    Heap_Mem                                 0x200009b0   Data         512  startup_stm32g474xx.o(HEAP)
+    HEAP                                     0x200009b0   Section      512  startup_stm32g474xx.o(HEAP)
+    Stack_Mem                                0x20000bb0   Data        1024  startup_stm32g474xx.o(STACK)
+    STACK                                    0x20000bb0   Section     1024  startup_stm32g474xx.o(STACK)
+    __initial_sp                             0x20000fb0   Data           0  startup_stm32g474xx.o(STACK)
 
     Global Symbols
 
@@ -3607,7 +3606,7 @@ Image Symbol Table
     INV_OutputDisable                        0x08004e45   Thumb Code   106  inverter_control_tools.o(.text.INV_OutputDisable)
     INV_OutputEnable                         0x08004eb1   Thumb Code    94  inverter_control_tools.o(.text.INV_OutputEnable)
     INV_SamplingNotifyCycle                  0x08004f11   Thumb Code    16  inverter_sampling.o(.text.INV_SamplingNotifyCycle)
-    INV_SamplingStart                        0x08004f21   Thumb Code   156  inverter_sampling.o(.text.INV_SamplingStart)
+    INV_SamplingStart                        0x08004f21   Thumb Code   154  inverter_sampling.o(.text.INV_SamplingStart)
     INV_SetAmplitude                         0x08004fbd   Thumb Code    24  inverter_control_tools.o(.text.INV_SetAmplitude)
     INV_SetFrequency                         0x08004fd5   Thumb Code    64  inverter_control_tools.o(.text.INV_SetFrequency)
     INV_ShowStandby                          0x08005015   Thumb Code   128  inverter_menu.o(.text.INV_ShowStandby)
@@ -3624,39 +3623,39 @@ Image Symbol Table
     OLED_ShowString                          0x0800600d   Thumb Code   418  oled.o(.text.OLED_ShowString)
     PendSV_Handler                           0x080061b1   Thumb Code     2  stm32g4xx_it.o(.text.PendSV_Handler)
     SVC_Handler                              0x08006415   Thumb Code     2  stm32g4xx_it.o(.text.SVC_Handler)
-    SysTick_Handler                          0x08006521   Thumb Code    14  stm32g4xx_it.o(.text.SysTick_Handler)
-    SystemInit                               0x08006531   Thumb Code    18  system_stm32g4xx.o(.text.SystemInit)
-    TIM1_BRK_TIM15_IRQHandler                0x08006545   Thumb Code    12  stm32g4xx_it.o(.text.TIM1_BRK_TIM15_IRQHandler)
-    TIM5_IRQHandler                          0x08006551   Thumb Code    12  stm32g4xx_it.o(.text.TIM5_IRQHandler)
-    TIM_Base_SetConfig                       0x0800655d   Thumb Code   328  stm32g4xx_hal_tim.o(.text.TIM_Base_SetConfig)
-    UsageFault_Handler                       0x080066a5   Thumb Code    14  stm32g4xx_it.o(.text.UsageFault_Handler)
-    main                                     0x080066b5   Thumb Code  1640  main.o(.text.main)
-    _btod_d2e                                0x08006d35   Thumb Code    62  btod.o(CL$$btod_d2e)
-    _d2e_denorm_low                          0x08006d73   Thumb Code    70  btod.o(CL$$btod_d2e_denorm_low)
-    _d2e_norm_op1                            0x08006db9   Thumb Code    96  btod.o(CL$$btod_d2e_norm_op1)
-    __btod_div_common                        0x08006e19   Thumb Code   696  btod.o(CL$$btod_div_common)
-    _e2e                                     0x08007151   Thumb Code   220  btod.o(CL$$btod_e2e)
-    _btod_ediv                               0x0800722d   Thumb Code    42  btod.o(CL$$btod_ediv)
-    _btod_emul                               0x08007257   Thumb Code    42  btod.o(CL$$btod_emul)
-    __btod_mult_common                       0x08007281   Thumb Code   580  btod.o(CL$$btod_mult_common)
-    __ARM_fpclassify                         0x080074c5   Thumb Code    48  fpclassify.o(i.__ARM_fpclassify)
-    __ARM_fpclassifyf                        0x080074f5   Thumb Code    38  fpclassifyf.o(i.__ARM_fpclassifyf)
-    __hardfp_sinf                            0x0800751d   Thumb Code   344  sinf.o(i.__hardfp_sinf)
-    __mathlib_flt_infnan                     0x080076ad   Thumb Code     6  funder.o(i.__mathlib_flt_infnan)
-    __mathlib_flt_invalid                    0x080076b5   Thumb Code    10  funder.o(i.__mathlib_flt_invalid)
-    __mathlib_flt_underflow                  0x080076c5   Thumb Code    10  funder.o(i.__mathlib_flt_underflow)
-    __mathlib_rredf2                         0x080076d5   Thumb Code   316  rredf.o(i.__mathlib_rredf2)
-    _is_digit                                0x08007829   Thumb Code    14  __printf_wp.o(i._is_digit)
-    _get_lc_numeric                          0x08007839   Thumb Code    44  lc_numeric_c.o(locale$$code)
-    _fp_init                                 0x08007865   Thumb Code    26  fpinit.o(x$fpl$fpinit)
-    __fplib_config_fpu_vfp                   0x0800787d   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fplib_config_pureend_doubles           0x0800787d   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    _printf_fp_dec                           0x0800787f   Thumb Code     4  printf1.o(x$fpl$printf1)
-    _printf_fp_hex                           0x08007883   Thumb Code     4  printf2.o(x$fpl$printf2)
-    __I$use$fp                               0x08007886   Number         0  usenofp.o(x$fpl$usenofp)
-    AHBPrescTable                            0x08007974   Data          16  system_stm32g4xx.o(.rodata.AHBPrescTable)
-    Region$$Table$$Base                      0x08007d80   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08007da0   Number         0  anon$$obj.o(Region$$Table)
+    SysTick_Handler                          0x080064f9   Thumb Code    14  stm32g4xx_it.o(.text.SysTick_Handler)
+    SystemInit                               0x08006509   Thumb Code    18  system_stm32g4xx.o(.text.SystemInit)
+    TIM1_BRK_TIM15_IRQHandler                0x0800651d   Thumb Code    12  stm32g4xx_it.o(.text.TIM1_BRK_TIM15_IRQHandler)
+    TIM5_IRQHandler                          0x08006529   Thumb Code    12  stm32g4xx_it.o(.text.TIM5_IRQHandler)
+    TIM_Base_SetConfig                       0x08006535   Thumb Code   328  stm32g4xx_hal_tim.o(.text.TIM_Base_SetConfig)
+    UsageFault_Handler                       0x0800667d   Thumb Code    14  stm32g4xx_it.o(.text.UsageFault_Handler)
+    main                                     0x0800668d   Thumb Code  1640  main.o(.text.main)
+    _btod_d2e                                0x08006d0d   Thumb Code    62  btod.o(CL$$btod_d2e)
+    _d2e_denorm_low                          0x08006d4b   Thumb Code    70  btod.o(CL$$btod_d2e_denorm_low)
+    _d2e_norm_op1                            0x08006d91   Thumb Code    96  btod.o(CL$$btod_d2e_norm_op1)
+    __btod_div_common                        0x08006df1   Thumb Code   696  btod.o(CL$$btod_div_common)
+    _e2e                                     0x08007129   Thumb Code   220  btod.o(CL$$btod_e2e)
+    _btod_ediv                               0x08007205   Thumb Code    42  btod.o(CL$$btod_ediv)
+    _btod_emul                               0x0800722f   Thumb Code    42  btod.o(CL$$btod_emul)
+    __btod_mult_common                       0x08007259   Thumb Code   580  btod.o(CL$$btod_mult_common)
+    __ARM_fpclassify                         0x0800749d   Thumb Code    48  fpclassify.o(i.__ARM_fpclassify)
+    __ARM_fpclassifyf                        0x080074cd   Thumb Code    38  fpclassifyf.o(i.__ARM_fpclassifyf)
+    __hardfp_sinf                            0x080074f5   Thumb Code   344  sinf.o(i.__hardfp_sinf)
+    __mathlib_flt_infnan                     0x08007685   Thumb Code     6  funder.o(i.__mathlib_flt_infnan)
+    __mathlib_flt_invalid                    0x0800768d   Thumb Code    10  funder.o(i.__mathlib_flt_invalid)
+    __mathlib_flt_underflow                  0x0800769d   Thumb Code    10  funder.o(i.__mathlib_flt_underflow)
+    __mathlib_rredf2                         0x080076ad   Thumb Code   316  rredf.o(i.__mathlib_rredf2)
+    _is_digit                                0x08007801   Thumb Code    14  __printf_wp.o(i._is_digit)
+    _get_lc_numeric                          0x08007811   Thumb Code    44  lc_numeric_c.o(locale$$code)
+    _fp_init                                 0x0800783d   Thumb Code    26  fpinit.o(x$fpl$fpinit)
+    __fplib_config_fpu_vfp                   0x08007855   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fplib_config_pureend_doubles           0x08007855   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    _printf_fp_dec                           0x08007857   Thumb Code     4  printf1.o(x$fpl$printf1)
+    _printf_fp_hex                           0x0800785b   Thumb Code     4  printf2.o(x$fpl$printf2)
+    __I$use$fp                               0x0800785e   Number         0  usenofp.o(x$fpl$usenofp)
+    AHBPrescTable                            0x0800794c   Data          16  system_stm32g4xx.o(.rodata.AHBPrescTable)
+    Region$$Table$$Base                      0x08007d58   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08007d78   Number         0  anon$$obj.o(Region$$Table)
     uwTickPrio                               0x20000000   Data           4  stm32g4xx_hal.o(.data..L_MergedGlobals)
     uwTickFreq                               0x20000004   Data           4  stm32g4xx_hal.o(.data..L_MergedGlobals)
     INV_Amp                                  0x20000008   Data           4  inverter_control_tools.o(.data.INV_Amp)
@@ -3665,12 +3664,12 @@ Image Symbol Table
     __libspace_start                         0x20000018   Data          96  libspace.o(.bss)
     __temporary_stack_top$libspace           0x20000078   Data           0  libspace.o(.bss)
     INV_PwmFlag                              0x20000098   Data           4  inverter_control_tools.o(.bss..L_MergedGlobals)
-    hadc1                                    0x20000110   Data         108  main.o(.bss.hadc1)
-    hdma_adc1                                0x2000017c   Data          96  main.o(.bss.hdma_adc1)
-    hspi2                                    0x200001dc   Data         100  main.o(.bss.hspi2)
-    htim1                                    0x20000240   Data          76  main.o(.bss.htim1)
-    htim5                                    0x2000028c   Data          76  main.o(.bss.htim5)
-    uwTick                                   0x200009b0   Data           4  stm32g4xx_hal.o(.bss.uwTick)
+    hadc1                                    0x2000010c   Data         108  main.o(.bss.hadc1)
+    hdma_adc1                                0x20000178   Data          96  main.o(.bss.hdma_adc1)
+    hspi2                                    0x200001d8   Data         100  main.o(.bss.hspi2)
+    htim1                                    0x2000023c   Data          76  main.o(.bss.htim1)
+    htim5                                    0x20000288   Data          76  main.o(.bss.htim5)
+    uwTick                                   0x200009ac   Data           4  stm32g4xx_hal.o(.bss.uwTick)
 
 
 
@@ -3680,9 +3679,9 @@ Memory Map of the image
 
   Image Entry point : 0x080001d9
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00007dd8, Max: 0x00080000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00007db0, Max: 0x00080000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00007dbc, Max: 0x00080000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00007d94, Max: 0x00080000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -3909,7 +3908,8 @@ Memory Map of the image
     0x08004eb0   0x08004eb0   0x0000005e   Code   RO          104    .text.INV_OutputEnable  inverter_control_tools.o
     0x08004f0e   0x08004f0e   0x00000002   PAD
     0x08004f10   0x08004f10   0x00000010   Code   RO          122    .text.INV_SamplingNotifyCycle  inverter_sampling.o
-    0x08004f20   0x08004f20   0x0000009c   Code   RO          126    .text.INV_SamplingStart  inverter_sampling.o
+    0x08004f20   0x08004f20   0x0000009a   Code   RO          126    .text.INV_SamplingStart  inverter_sampling.o
+    0x08004fba   0x08004fba   0x00000002   PAD
     0x08004fbc   0x08004fbc   0x00000018   Code   RO           98    .text.INV_SetAmplitude  inverter_control_tools.o
     0x08004fd4   0x08004fd4   0x00000040   Code   RO          102    .text.INV_SetFrequency  inverter_control_tools.o
     0x08005014   0x08005014   0x000000c8   Code   RO           79    .text.INV_ShowStandby  inverter_menu.o
@@ -3938,83 +3938,82 @@ Memory Map of the image
     0x08006412   0x08006412   0x00000002   PAD
     0x08006414   0x08006414   0x00000002   Code   RO          179    .text.SVC_Handler   stm32g4xx_it.o
     0x08006416   0x08006416   0x00000002   PAD
-    0x08006418   0x08006418   0x00000108   Code   RO          134    .text.SamplingProcessFrame  inverter_sampling.o
-    0x08006520   0x08006520   0x0000000e   Code   RO          185    .text.SysTick_Handler  stm32g4xx_it.o
-    0x0800652e   0x0800652e   0x00000002   PAD
-    0x08006530   0x08006530   0x00000012   Code   RO         1371    .text.SystemInit    system_stm32g4xx.o
-    0x08006542   0x08006542   0x00000002   PAD
-    0x08006544   0x08006544   0x0000000c   Code   RO          191    .text.TIM1_BRK_TIM15_IRQHandler  stm32g4xx_it.o
-    0x08006550   0x08006550   0x0000000c   Code   RO          193    .text.TIM5_IRQHandler  stm32g4xx_it.o
-    0x0800655c   0x0800655c   0x00000148   Code   RO         1001    .text.TIM_Base_SetConfig  stm32g4xx_hal_tim.o
-    0x080066a4   0x080066a4   0x0000000e   Code   RO          177    .text.UsageFault_Handler  stm32g4xx_it.o
-    0x080066b2   0x080066b2   0x00000002   PAD
-    0x080066b4   0x080066b4   0x00000680   Code   RO          147    .text.main          main.o
-    0x08006d34   0x08006d34   0x0000003e   Code   RO         1550    CL$$btod_d2e        c_w.l(btod.o)
-    0x08006d72   0x08006d72   0x00000046   Code   RO         1552    CL$$btod_d2e_denorm_low  c_w.l(btod.o)
-    0x08006db8   0x08006db8   0x00000060   Code   RO         1551    CL$$btod_d2e_norm_op1  c_w.l(btod.o)
-    0x08006e18   0x08006e18   0x00000338   Code   RO         1560    CL$$btod_div_common  c_w.l(btod.o)
-    0x08007150   0x08007150   0x000000dc   Code   RO         1557    CL$$btod_e2e        c_w.l(btod.o)
-    0x0800722c   0x0800722c   0x0000002a   Code   RO         1554    CL$$btod_ediv       c_w.l(btod.o)
-    0x08007256   0x08007256   0x0000002a   Code   RO         1553    CL$$btod_emul       c_w.l(btod.o)
-    0x08007280   0x08007280   0x00000244   Code   RO         1559    CL$$btod_mult_common  c_w.l(btod.o)
-    0x080074c4   0x080074c4   0x00000030   Code   RO         1581    i.__ARM_fpclassify  m_wm.l(fpclassify.o)
-    0x080074f4   0x080074f4   0x00000026   Code   RO         1497    i.__ARM_fpclassifyf  m_wm.l(fpclassifyf.o)
-    0x0800751a   0x0800751a   0x00000002   PAD
-    0x0800751c   0x0800751c   0x00000190   Code   RO         1457    i.__hardfp_sinf     m_wm.l(sinf.o)
-    0x080076ac   0x080076ac   0x00000006   Code   RO         1500    i.__mathlib_flt_infnan  m_wm.l(funder.o)
-    0x080076b2   0x080076b2   0x00000002   PAD
-    0x080076b4   0x080076b4   0x00000010   Code   RO         1502    i.__mathlib_flt_invalid  m_wm.l(funder.o)
-    0x080076c4   0x080076c4   0x00000010   Code   RO         1505    i.__mathlib_flt_underflow  m_wm.l(funder.o)
-    0x080076d4   0x080076d4   0x00000154   Code   RO         1513    i.__mathlib_rredf2  m_wm.l(rredf.o)
-    0x08007828   0x08007828   0x0000000e   Code   RO         1409    i._is_digit         c_w.l(__printf_wp.o)
-    0x08007836   0x08007836   0x00000002   PAD
-    0x08007838   0x08007838   0x0000002c   Code   RO         1575    locale$$code        c_w.l(lc_numeric_c.o)
-    0x08007864   0x08007864   0x0000001a   Code   RO         1653    x$fpl$fpinit        fz_wm.l(fpinit.o)
-    0x0800787e   0x0800787e   0x00000004   Code   RO         1449    x$fpl$printf1       fz_wm.l(printf1.o)
-    0x08007882   0x08007882   0x00000004   Code   RO         1451    x$fpl$printf2       fz_wm.l(printf2.o)
-    0x08007886   0x08007886   0x00000000   Code   RO         1496    x$fpl$usenofp       fz_wm.l(usenofp.o)
-    0x08007886   0x08007886   0x00000011   Data   RO         1417    .constdata          c_w.l(__printf_flags_ss_wp.o)
-    0x08007897   0x08007897   0x00000026   Data   RO         1473    .constdata          c_w.l(_printf_fp_hex.o)
-    0x080078bd   0x080078bd   0x00000003   PAD
-    0x080078c0   0x080078c0   0x00000020   Data   RO         1514    .constdata          m_wm.l(rredf.o)
-    0x080078e0   0x080078e0   0x00000094   Data   RO         1548    .constdata          c_w.l(bigflt0.o)
-    0x08007974   0x08007974   0x00000010   Data   RO         1376    .rodata.AHBPrescTable  system_stm32g4xx.o
-    0x08007984   0x08007984   0x000003b0   Data   RO           34    .rodata.Font8x16    oled.o
-    0x08007d34   0x08007d34   0x00000011   Data   RO           51    .rodata.str1.1      keyboard.o
-    0x08007d45   0x08007d45   0x00000039   Data   RO           83    .rodata.str1.1      inverter_menu.o
-    0x08007d7e   0x08007d7e   0x00000002   PAD
-    0x08007d80   0x08007d80   0x00000020   Data   RO         1735    Region$$Table       anon$$obj.o
-    0x08007da0   0x08007da0   0x0000001c   Data   RO         1574    locale$$data        c_w.l(lc_numeric_c.o)
+    0x08006418   0x08006418   0x000000e0   Code   RO          134    .text.SamplingProcessFrame  inverter_sampling.o
+    0x080064f8   0x080064f8   0x0000000e   Code   RO          185    .text.SysTick_Handler  stm32g4xx_it.o
+    0x08006506   0x08006506   0x00000002   PAD
+    0x08006508   0x08006508   0x00000012   Code   RO         1371    .text.SystemInit    system_stm32g4xx.o
+    0x0800651a   0x0800651a   0x00000002   PAD
+    0x0800651c   0x0800651c   0x0000000c   Code   RO          191    .text.TIM1_BRK_TIM15_IRQHandler  stm32g4xx_it.o
+    0x08006528   0x08006528   0x0000000c   Code   RO          193    .text.TIM5_IRQHandler  stm32g4xx_it.o
+    0x08006534   0x08006534   0x00000148   Code   RO         1001    .text.TIM_Base_SetConfig  stm32g4xx_hal_tim.o
+    0x0800667c   0x0800667c   0x0000000e   Code   RO          177    .text.UsageFault_Handler  stm32g4xx_it.o
+    0x0800668a   0x0800668a   0x00000002   PAD
+    0x0800668c   0x0800668c   0x00000680   Code   RO          147    .text.main          main.o
+    0x08006d0c   0x08006d0c   0x0000003e   Code   RO         1550    CL$$btod_d2e        c_w.l(btod.o)
+    0x08006d4a   0x08006d4a   0x00000046   Code   RO         1552    CL$$btod_d2e_denorm_low  c_w.l(btod.o)
+    0x08006d90   0x08006d90   0x00000060   Code   RO         1551    CL$$btod_d2e_norm_op1  c_w.l(btod.o)
+    0x08006df0   0x08006df0   0x00000338   Code   RO         1560    CL$$btod_div_common  c_w.l(btod.o)
+    0x08007128   0x08007128   0x000000dc   Code   RO         1557    CL$$btod_e2e        c_w.l(btod.o)
+    0x08007204   0x08007204   0x0000002a   Code   RO         1554    CL$$btod_ediv       c_w.l(btod.o)
+    0x0800722e   0x0800722e   0x0000002a   Code   RO         1553    CL$$btod_emul       c_w.l(btod.o)
+    0x08007258   0x08007258   0x00000244   Code   RO         1559    CL$$btod_mult_common  c_w.l(btod.o)
+    0x0800749c   0x0800749c   0x00000030   Code   RO         1581    i.__ARM_fpclassify  m_wm.l(fpclassify.o)
+    0x080074cc   0x080074cc   0x00000026   Code   RO         1497    i.__ARM_fpclassifyf  m_wm.l(fpclassifyf.o)
+    0x080074f2   0x080074f2   0x00000002   PAD
+    0x080074f4   0x080074f4   0x00000190   Code   RO         1457    i.__hardfp_sinf     m_wm.l(sinf.o)
+    0x08007684   0x08007684   0x00000006   Code   RO         1500    i.__mathlib_flt_infnan  m_wm.l(funder.o)
+    0x0800768a   0x0800768a   0x00000002   PAD
+    0x0800768c   0x0800768c   0x00000010   Code   RO         1502    i.__mathlib_flt_invalid  m_wm.l(funder.o)
+    0x0800769c   0x0800769c   0x00000010   Code   RO         1505    i.__mathlib_flt_underflow  m_wm.l(funder.o)
+    0x080076ac   0x080076ac   0x00000154   Code   RO         1513    i.__mathlib_rredf2  m_wm.l(rredf.o)
+    0x08007800   0x08007800   0x0000000e   Code   RO         1409    i._is_digit         c_w.l(__printf_wp.o)
+    0x0800780e   0x0800780e   0x00000002   PAD
+    0x08007810   0x08007810   0x0000002c   Code   RO         1575    locale$$code        c_w.l(lc_numeric_c.o)
+    0x0800783c   0x0800783c   0x0000001a   Code   RO         1653    x$fpl$fpinit        fz_wm.l(fpinit.o)
+    0x08007856   0x08007856   0x00000004   Code   RO         1449    x$fpl$printf1       fz_wm.l(printf1.o)
+    0x0800785a   0x0800785a   0x00000004   Code   RO         1451    x$fpl$printf2       fz_wm.l(printf2.o)
+    0x0800785e   0x0800785e   0x00000000   Code   RO         1496    x$fpl$usenofp       fz_wm.l(usenofp.o)
+    0x0800785e   0x0800785e   0x00000011   Data   RO         1417    .constdata          c_w.l(__printf_flags_ss_wp.o)
+    0x0800786f   0x0800786f   0x00000026   Data   RO         1473    .constdata          c_w.l(_printf_fp_hex.o)
+    0x08007895   0x08007895   0x00000003   PAD
+    0x08007898   0x08007898   0x00000020   Data   RO         1514    .constdata          m_wm.l(rredf.o)
+    0x080078b8   0x080078b8   0x00000094   Data   RO         1548    .constdata          c_w.l(bigflt0.o)
+    0x0800794c   0x0800794c   0x00000010   Data   RO         1376    .rodata.AHBPrescTable  system_stm32g4xx.o
+    0x0800795c   0x0800795c   0x000003b0   Data   RO           34    .rodata.Font8x16    oled.o
+    0x08007d0c   0x08007d0c   0x00000011   Data   RO           51    .rodata.str1.1      keyboard.o
+    0x08007d1d   0x08007d1d   0x00000039   Data   RO           83    .rodata.str1.1      inverter_menu.o
+    0x08007d56   0x08007d56   0x00000002   PAD
+    0x08007d58   0x08007d58   0x00000020   Data   RO         1735    Region$$Table       anon$$obj.o
+    0x08007d78   0x08007d78   0x0000001c   Data   RO         1574    locale$$data        c_w.l(lc_numeric_c.o)
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08007dc0, Size: 0x00000fb8, Max: 0x00020000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08007d98, Size: 0x00000fb0, Max: 0x00020000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08007dc0   0x00000008   Data   RW          434    .data..L_MergedGlobals  stm32g4xx_hal.o
-    0x20000008   0x08007dc8   0x00000004   Data   RW          109    .data.INV_Amp       inverter_control_tools.o
-    0x2000000c   0x08007dcc   0x00000004   Data   RW          108    .data.INV_Freq      inverter_control_tools.o
-    0x20000010   0x08007dd0   0x00000004   Data   RW         1375    .data.SystemCoreClock  system_stm32g4xx.o
-    0x20000014   0x08007dd4   0x00000004   PAD
+    0x20000000   0x08007d98   0x00000008   Data   RW          434    .data..L_MergedGlobals  stm32g4xx_hal.o
+    0x20000008   0x08007da0   0x00000004   Data   RW          109    .data.INV_Amp       inverter_control_tools.o
+    0x2000000c   0x08007da4   0x00000004   Data   RW          108    .data.INV_Freq      inverter_control_tools.o
+    0x20000010   0x08007da8   0x00000004   Data   RW         1375    .data.SystemCoreClock  system_stm32g4xx.o
+    0x20000014   0x08007dac   0x00000004   PAD
     0x20000018        -       0x00000060   Zero   RW         1584    .bss                c_w.l(libspace.o)
     0x20000078        -       0x0000000a   Zero   RW           52    .bss..L_MergedGlobals  keyboard.o
-    0x20000082   0x08007dd4   0x00000006   PAD
+    0x20000082   0x08007dac   0x00000006   PAD
     0x20000088        -       0x00000020   Zero   RW          111    .bss..L_MergedGlobals  inverter_control_tools.o
-    0x200000a8        -       0x00000068   Zero   RW          138    .bss..L_MergedGlobals  inverter_sampling.o
-    0x20000110        -       0x0000006c   Zero   RW          155    .bss.hadc1          main.o
-    0x2000017c        -       0x00000060   Zero   RW          156    .bss.hdma_adc1      main.o
-    0x200001dc        -       0x00000064   Zero   RW          157    .bss.hspi2          main.o
-    0x20000240        -       0x0000004c   Zero   RW          158    .bss.htim1          main.o
-    0x2000028c        -       0x0000004c   Zero   RW          159    .bss.htim5          main.o
-    0x200002d8        -       0x00000400   Zero   RW           31    .bss.oled_buf       oled.o
-    0x200006d8        -       0x00000001   Zero   RW           32    .bss.oled_status    oled.o
-    0x200006d9   0x08007dd4   0x00000003   PAD
-    0x200006dc        -       0x00000004   Zero   RW           70    .bss.phase_index    bipolar_pwm.o
-    0x200006e0        -       0x000002d0   Zero   RW           69    .bss.sine_table     bipolar_pwm.o
-    0x200009b0        -       0x00000004   Zero   RW          433    .bss.uwTick         stm32g4xx_hal.o
-    0x200009b4   0x08007dd4   0x00000004   PAD
-    0x200009b8        -       0x00000200   Zero   RW            2    HEAP                startup_stm32g474xx.o
-    0x20000bb8        -       0x00000400   Zero   RW            1    STACK               startup_stm32g474xx.o
+    0x200000a8        -       0x00000064   Zero   RW          138    .bss..L_MergedGlobals  inverter_sampling.o
+    0x2000010c        -       0x0000006c   Zero   RW          155    .bss.hadc1          main.o
+    0x20000178        -       0x00000060   Zero   RW          156    .bss.hdma_adc1      main.o
+    0x200001d8        -       0x00000064   Zero   RW          157    .bss.hspi2          main.o
+    0x2000023c        -       0x0000004c   Zero   RW          158    .bss.htim1          main.o
+    0x20000288        -       0x0000004c   Zero   RW          159    .bss.htim5          main.o
+    0x200002d4        -       0x00000400   Zero   RW           31    .bss.oled_buf       oled.o
+    0x200006d4        -       0x00000001   Zero   RW           32    .bss.oled_status    oled.o
+    0x200006d5   0x08007dac   0x00000003   PAD
+    0x200006d8        -       0x00000004   Zero   RW           70    .bss.phase_index    bipolar_pwm.o
+    0x200006dc        -       0x000002d0   Zero   RW           69    .bss.sine_table     bipolar_pwm.o
+    0x200009ac        -       0x00000004   Zero   RW          433    .bss.uwTick         stm32g4xx_hal.o
+    0x200009b0        -       0x00000200   Zero   RW            2    HEAP                startup_stm32g474xx.o
+    0x20000bb0        -       0x00000400   Zero   RW            1    STACK               startup_stm32g474xx.o
 
 
 ==============================================================================
@@ -4027,7 +4026,7 @@ Image component sizes
       1566         12          0          0        724       8225   bipolar_pwm.o
        288          0          0          8         32       7907   inverter_control_tools.o
        622         80         57          0          0       1654   inverter_menu.o
-       492          0          0          0        104       8068   inverter_sampling.o
+       450          0          0          0        100       7977   inverter_sampling.o
        430          0         17          0         10       4222   keyboard.o
       1682         24          0          0        456      17705   main.o
       3834          0        944          0       1025      17276   oled.o
@@ -4049,9 +4048,9 @@ Image component sizes
         18          0         16          4          0       2775   system_stm32g4xx.o
 
     ----------------------------------------------------------------------
-     23520        220       1540         20       3908     330260   Object Totals
+     23480        220       1540         20       3900     330169   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-       128          0          2          0         17          0   (incl. Padding)
+       130          0          2          0         13          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -4140,15 +4139,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     30382        534       1806         20       4004     331876   Grand Totals
-     30382        534       1806         20       4004     331876   ELF Image Totals
-     30382        534       1806         20          0          0   ROM Totals
+     30342        534       1806         20       3996     331785   Grand Totals
+     30342        534       1806         20       3996     331785   ELF Image Totals
+     30342        534       1806         20          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                32188 (  31.43kB)
-    Total RW  Size (RW Data + ZI Data)              4024 (   3.93kB)
-    Total ROM Size (Code + RO Data + RW Data)      32208 (  31.45kB)
+    Total RO  Size (Code + RO Data)                32148 (  31.39kB)
+    Total RW  Size (RW Data + ZI Data)              4016 (   3.92kB)
+    Total ROM Size (Code + RO Data + RW Data)      32168 (  31.41kB)
 
 ==============================================================================
 
