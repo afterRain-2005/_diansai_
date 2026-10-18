@@ -163,6 +163,8 @@ static void CheckControl(void)
 
 static void CheckVoltageControl(void)
 {
+    /* CheckControl 已把频率改为 30，先恢复 50 使窗口等于 400。 */
+    INV_SetFrequency(50);
     INV_SetAmplitude(50);
     INV_PwmFlag = 1;
     INV_ResetVoltageControl();
@@ -225,6 +227,35 @@ static void CheckVoltageControl(void)
     INV_VoltagePI(200.0f, 0.0f, 1.0f, 1.0f, 0.1f);
     assert(INV_Amp == INV_AMP_MAX);
     assert(INV_CalculateVoltageRms(10.0f) < 0.0f);
+
+    /* 闭环状态机：目标或增益未配置时禁止开输出。 */
+    INV_SetLoopEnable(1);
+    INV_SetTargetVoltage(0.0f);
+    assert(INV_GetLoopState() == INV_LOOP_SETUP);
+    INV_OutputEnable();
+    assert(!INV_PwmFlag);
+    INV_SetTargetVoltage(20.0f);
+    assert(INV_GetLoopState() == INV_LOOP_WAIT);
+    INV_OutputEnable();
+    assert(INV_PwmFlag);
+
+    /* 闭环 tick：RMS 每帧 O(1) 滑动更新，PI 按真实 dt 至多 1ms 一次。 */
+    INV_SetAmplitude(50);
+    test_tick = 0U;
+    INV_SetLoopEnable(1);          /* 复位并记录 PI 节拍基准 */
+    INV_SetTargetVoltage(20.0f);
+    INV_SetVoltageGains(1.0f, 1.0f);
+    INV_SetFeedbackChannel(0);
+    assert(INV_GetLoopState() == INV_LOOP_WAIT);
+    for (uint32_t i = 0; i < INV_RMS_WINDOW_SIZE; i++)
+        INV_VoltageControlTick(10.0f);
+    assert(INV_GetLoopState() == INV_LOOP_READY);
+    test_tick += 10U;
+    INV_VoltageControlTick(10.0f);
+    assert(INV_Amp == 60); /* 50 + Kp*10 + Ki*10*0.01 */
+    INV_PwmFlag = 0;
+    INV_SetLoopEnable(0);
+    INV_SetTargetVoltage(0.0f);
 }
 
 static void FeedSampling(uint16_t v1, uint16_t v2, uint16_t current)
@@ -260,18 +291,39 @@ static void CheckSampling(void)
     INV_SamplingGetData(&data);
     assert(data.offset_valid && data.sequence == 6U);
     assert(data.raw[0] == 2200U && data.raw[1] == 1150U && data.raw[2] == 3120U);
-    assert(data.offset[0] == 2000.0f && data.offset[1] == 1000.0f && data.offset[2] == 3000.0f);
-    assert(data.ac[0] == 200.0f && data.ac[1] == 150.0f && data.ac[2] == 120.0f);
+    /* 偏置为换算值 K*均值+B，交流分量为 K*(原始值-均值)。 */
+    assert(fabsf(data.offset[0] - (INV_SAMPLE_V1_K * 2000.0f + INV_SAMPLE_V1_B)) < 0.001f);
+    assert(fabsf(data.offset[1] - (INV_SAMPLE_V2_K * 1000.0f + INV_SAMPLE_V2_B)) < 0.001f);
+    assert(fabsf(data.offset[2] - (INV_SAMPLE_I_K * 3000.0f + INV_SAMPLE_I_B)) < 0.001f);
+    assert(fabsf(data.ac[0] - INV_SAMPLE_V1_K * 200.0f) < 0.001f);
+    assert(fabsf(data.ac[1] - INV_SAMPLE_V2_K * 150.0f) < 0.001f);
+    assert(fabsf(data.ac[2] - INV_SAMPLE_I_K * 120.0f) < 0.001f);
     FeedSampling(2100U, 1100U, 3100U);
     FeedSampling(2000U, 1050U, 3080U);
     FeedSampling(2100U, 1100U, 3100U);
     INV_SamplingGetData(&data);
-    assert(data.offset[0] == 2000.0f); /* 周期内固定使用上一周的偏置。 */
+    assert(fabsf(data.offset[0] - (INV_SAMPLE_V1_K * 2000.0f + INV_SAMPLE_V1_B)) < 0.001f);
+    /* 周期内固定使用上一周的偏置。 */
     INV_SamplingNotifyCycle();
     FeedSampling(2400U, 1400U, 3400U);
     INV_SamplingGetData(&data);
-    assert(data.offset[0] == 2100.0f && data.offset[1] == 1100.0f && data.offset[2] == 3100.0f);
-    assert(data.ac[0] == 300.0f && data.ac[1] == 300.0f && data.ac[2] == 300.0f);
+    assert(fabsf(data.offset[0] - (INV_SAMPLE_V1_K * 2100.0f + INV_SAMPLE_V1_B)) < 0.001f);
+    assert(fabsf(data.offset[1] - (INV_SAMPLE_V2_K * 1100.0f + INV_SAMPLE_V2_B)) < 0.001f);
+    assert(fabsf(data.offset[2] - (INV_SAMPLE_I_K * 3100.0f + INV_SAMPLE_I_B)) < 0.001f);
+    assert(fabsf(data.ac[0] - INV_SAMPLE_V1_K * 300.0f) < 0.001f);
+    assert(fabsf(data.ac[1] - INV_SAMPLE_V2_K * 300.0f) < 0.001f);
+    assert(fabsf(data.ac[2] - INV_SAMPLE_I_K * 300.0f) < 0.001f);
+    /* 跳过整周：旧偏置失效并复位闭环，重新收满一周后恢复。 */
+    INV_SamplingNotifyCycle();
+    INV_SamplingNotifyCycle();
+    FeedSampling(2500U, 1500U, 3500U);
+    INV_SamplingGetData(&data);
+    assert(!data.offset_valid);
+    INV_SamplingNotifyCycle();
+    FeedSampling(2000U, 1000U, 3000U);
+    INV_SamplingGetData(&data);
+    assert(data.offset_valid);
+    assert(fabsf(data.offset[0] - (INV_SAMPLE_V1_K * 2500.0f + INV_SAMPLE_V1_B)) < 0.001f);
     test_primask = 1U;
     INV_SamplingGetData(&data);
     assert(test_primask == 1U);
@@ -289,13 +341,47 @@ static void CheckMenu(void)
 {
     INV_SetFrequency(50);
     INV_SetAmplitude(10);
+    INV_SetTargetVoltage(0.0f);
+    INV_SetLoopEnable(0);
+    INV_SetVoltageGains(INV_VOLTAGE_KP_DEFAULT, INV_VOLTAGE_KI_DEFAULT);
+    INV_SetFeedbackChannel(0);
     INV_OutputEnable();
-    test_keys = "6826D";
+    assert(INV_PwmFlag);
+
+    /* FREQ 项：6 三次 50 -> 53；退出菜单时输出已关闭。 */
+    test_keys = "666D";
     INV_Menu_Run();
-    assert(INV_Freq == 52 && INV_Amp == 10 && !INV_PwmFlag);
-    test_keys = "86C";
+    assert(INV_Freq == 53 && !INV_PwmFlag);
+
+    /* TGT ±0.5V 与开环 AMP 手动调整。 */
+    test_keys = "866866D";
     INV_Menu_Run();
-    assert(INV_Amp == 11 && !INV_PwmFlag);
+    assert(INV_TargetVoltage == 1.0f && INV_Amp == 12);
+
+    /* LOOP 使能、KP +0.01、KI +0.1、FB 切到 V2。 */
+    test_keys = "8886868686D";
+    INV_Menu_Run();
+    assert(INV_LoopEnable == 1 && INV_FeedbackChannel == 1);
+    assert(fabsf(INV_VoltageKp - 2.01f) < 0.0001f);
+    assert(fabsf(INV_VoltageKi - 20.1f) < 0.001f);
+
+    /* 闭环下 AMP 手动调整被拒绝。 */
+    test_keys = "8866D";
+    INV_Menu_Run();
+    assert(INV_Amp == 12);
+
+    /* 目标电压下限钳位到 0，进入 SETUP 后禁止开输出。 */
+    test_keys = "84444D";
+    INV_Menu_Run();
+    assert(INV_TargetVoltage == 0.0f);
+    INV_OutputEnable();
+    assert(!INV_PwmFlag);
+
+    /* 2 键反向循环。 */
+    test_keys = "22D";
+    INV_Menu_Run();
+    INV_SetLoopEnable(0);
+    INV_SetFeedbackChannel(0);
     INV_ShowStandby();
 }
 

@@ -29,14 +29,20 @@ void INV_SamplingUpdateOffset(void)
 {
     uint32_t cycle = sampling_cycle;
 
-    if (cycle_synced && cycle_count != 0U)
+    if (cycle == previous_cycle) return;
+
+    if (cycle_synced && cycle_count != 0U && cycle - previous_cycle == 1U)
     {
         for (uint32_t ch = 0; ch < INV_SAMPLE_CHANNELS; ch++)
             raw_offset[ch] = (float)cycle_sum[ch] / cycle_count;
         sampling_data.offset_valid = 1U;
     }
     else
+    {
+        /* 丢失整周数据时旧偏置不可信，复位闭环等待新窗口。 */
+        if (sampling_data.offset_valid) INV_ResetVoltageControl();
         sampling_data.offset_valid = 0U;
+    }
 
     for (uint32_t ch = 0; ch < INV_SAMPLE_CHANNELS; ch++)
         cycle_sum[ch] = 0U;
@@ -61,13 +67,14 @@ static void SamplingProcessFrame(const volatile uint16_t *raw)
     cycle_count++;
     sampling_data.sequence++;
     if (sampling_data.offset_valid != 0U)
-        INV_VoltageControlTick(sampling_data.ac[0]);
+        INV_VoltageControlTick(sampling_data.ac[INV_FeedbackChannel]);
 }
 
 HAL_StatusTypeDef INV_SamplingStart(void)
 {
     /* 仅在采样停止时调用，避免与 DMA 数据处理并发复位。 */
     sampling_data = (INV_SamplingData){0};
+    INV_ResetVoltageControl();
     previous_cycle = sampling_cycle;
     cycle_synced = 0U;
     cycle_count = 0U;
@@ -84,7 +91,11 @@ HAL_StatusTypeDef INV_SamplingStart(void)
 HAL_StatusTypeDef INV_SamplingStop(void)
 {
     HAL_StatusTypeDef status = HAL_ADC_Stop_DMA(&hadc1);
-    if (status == HAL_OK) sampling_data.offset_valid = 0U;
+    if (status == HAL_OK)
+    {
+        sampling_data.offset_valid = 0U;
+        INV_ResetVoltageControl();
+    }
     return status;
 }
 
