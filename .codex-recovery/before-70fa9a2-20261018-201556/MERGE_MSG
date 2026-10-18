@@ -1,0 +1,18 @@
+Merge branch 'main' of https://github.com/afterRain-2005/_diansai_
+
+# Conflicts:
+#	Core/Inc/inverter_control_tools.h
+#	Core/Src/inverter_control_tools.c
+#	Core/Src/inverter_menu.c
+#	Core/Src/inverter_sampling.c
+#	MDK-ARM/g474_code/g474_code.axf
+#	MDK-ARM/g474_code/g474_code.build_log.htm
+#	MDK-ARM/g474_code/g474_code.hex
+#	MDK-ARM/g474_code/g474_code.htm
+#	MDK-ARM/g474_code/g474_code.map
+#	MDK-ARM/g474_code/g474_code_g474_code.dep
+#	MDK-ARM/g474_code/inverter_control_tools.o
+#	MDK-ARM/g474_code/inverter_menu.o
+#	MDK-ARM/g474_code/inverter_sampling.d
+#	MDK-ARM/g474_code/inverter_sampling.o
+#	MDK-ARM/g474_code/main.o

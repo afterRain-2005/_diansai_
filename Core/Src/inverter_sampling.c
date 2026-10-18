@@ -29,6 +29,9 @@ void INV_SamplingUpdateOffset(void)
 {
     uint32_t cycle = sampling_cycle;
 
+    /* 每个 DMA 帧都会进来；只有周期号变化才换偏置，周期内保持上一周均值。 */
+    if (cycle == previous_cycle) return;
+
     if (cycle_synced && cycle_count != 0U)
     {
         for (uint32_t ch = 0; ch < INV_SAMPLE_CHANNELS; ch++)

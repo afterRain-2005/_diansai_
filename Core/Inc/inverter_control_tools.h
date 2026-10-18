@@ -20,12 +20,23 @@ extern volatile int32_t INV_Amp;     /* 调制幅度，%；闭环下由 PI 自�
 extern volatile int32_t INV_PwmFlag; /* 软件启停命令，不代表硬件输出测量值 */
 extern volatile float INV_TargetVoltage; /* 闭环目标电压（RMS） */
 
+/* 菜单显示用参数快照：控制层在中断里更新，主循环一次读出整组值。 */
+typedef struct
+{
+    int32_t frequency;      /* 目标频率，Hz */
+    float target_voltage;   /* 目标有效值，V */
+    int32_t amplitude;      /* 当前调制幅度，%；已乘进占空比 */
+    float voltage_rms;      /* 实测有效值，V；窗口未满为 -1.0f */
+    int32_t output_enabled; /* 软件启停命令 */
+} INV_Params;
+
 void INV_SetFrequency(int32_t frequency);
 void INV_SetAmplitude(int32_t amplitude);
 void INV_SetTargetVoltage(float target);
+void INV_GetParams(INV_Params *params);
 /* 最近一个 RMS 窗口的有效值；窗口未满返回 -1.0f。 */
 float INV_GetVoltageRms(void);
-/* 每个采样帧调用一次：O(1) 累加，窗口满后执行一次 PI 写 INV_Amp。 */
+/* 每个采样帧调用一次：始终更新显示用 RMS，目标大于 0 且已开输出时才做闭环。 */
 void INV_VoltageControlTick(float voltage);
 /* 单组状态，须在同一执行上下文串行调用；开始闭环或改变采样配置时复位。
  * 复位不改变 INV_Amp，关闭输出时也会自动复位。
@@ -42,8 +53,8 @@ float INV_CalculateVoltageRms(float voltage);
  */
 void INV_VoltagePI(float target_rms, float measured_rms,
                    float kp, float ki, float dt);
-/* 每个新电压样本调用一次：窗口未满时只累计样本，满窗后每次调用执行 PI。
- * 返回当前 RMS，未满窗返回 -1.0f；dt 为采样间隔（s），不包含等待满窗的时间。
+/* 每个新电压样本调用一次：窗口未满时只累计样本，之后每满一个窗口执行一次 PI。
+ * 返回当前 RMS，未满窗返回 -1.0f；dt 为两次 PI 的间隔（s），即一个窗口时长。
  * 开始前先调用 INV_ResetVoltageControl；不要再对同一个样本单独调用 RMS/PI。
  */
 float INV_UpdateVoltageControl(float voltage, float target_rms,

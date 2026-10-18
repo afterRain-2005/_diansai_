@@ -172,8 +172,11 @@ static void CheckVoltageControl(void)
         assert(INV_Amp == 50);
     }
     assert(INV_UpdateVoltageControl(10.0f, 20.0f, 1.0f, 1.0f, 0.1f) == 10.0f);
-    assert(INV_Amp == 61); /* 首次满窗才开始比例与积分调节。 */
-    INV_UpdateVoltageControl(10.0f, 20.0f, 1.0f, 1.0f, 0.1f);
+    assert(INV_Amp == 61); /* 满窗才执行比例与积分调节。 */
+    assert(INV_UpdateVoltageControl(10.0f, 20.0f, 1.0f, 1.0f, 0.1f) == 10.0f);
+    assert(INV_Amp == 61); /* 下一个窗口未满，不得重复调幅。 */
+    for (uint32_t i = 0; i < INV_RMS_WINDOW_SIZE - 1U; i++)
+        INV_UpdateVoltageControl(10.0f, 20.0f, 1.0f, 1.0f, 0.1f);
     assert(INV_Amp == 62);
     INV_SetAmplitude(50);
     INV_ResetVoltageControl();
@@ -225,6 +228,27 @@ static void CheckVoltageControl(void)
     INV_VoltagePI(200.0f, 0.0f, 1.0f, 1.0f, 0.1f);
     assert(INV_Amp == INV_AMP_MAX);
     assert(INV_CalculateVoltageRms(10.0f) < 0.0f);
+
+    /* INV_VoltageControlTick：逐帧累加平方，满窗才调一次 PI。 */
+    INV_SetAmplitude(50);
+    INV_SetTargetVoltage(20.0f);
+    INV_PwmFlag = 1;
+    INV_ResetVoltageControl();
+    for (uint32_t i = 0; i < INV_RMS_WINDOW_SIZE; i++)
+        INV_VoltageControlTick(10.0f);
+    assert(fabsf(INV_GetVoltageRms() - 10.0f) < 0.001f);
+    assert(INV_Amp == 74); /* 50 + Kp*(20-10) + Ki*(20-10)*0.02 */
+
+    /* 闭环关闭时仍更新实测值供显示，但不得改幅值。 */
+    INV_SetAmplitude(50);
+    INV_PwmFlag = 0;
+    INV_ResetVoltageControl();
+    for (uint32_t i = 0; i < INV_RMS_WINDOW_SIZE; i++)
+        INV_VoltageControlTick(5.0f);
+    assert(fabsf(INV_GetVoltageRms() - 5.0f) < 0.001f);
+    assert(INV_Amp == 50);
+    INV_SetTargetVoltage(0.0f);
+    INV_ResetVoltageControl();
 }
 
 static void FeedSampling(uint16_t v1, uint16_t v2, uint16_t current)
@@ -260,18 +284,28 @@ static void CheckSampling(void)
     INV_SamplingGetData(&data);
     assert(data.offset_valid && data.sequence == 6U);
     assert(data.raw[0] == 2200U && data.raw[1] == 1150U && data.raw[2] == 3120U);
-    assert(data.offset[0] == 2000.0f && data.offset[1] == 1000.0f && data.offset[2] == 3000.0f);
-    assert(data.ac[0] == 200.0f && data.ac[1] == 150.0f && data.ac[2] == 120.0f);
+    assert(data.value[0] == INV_SamplingConvert(2200U, INV_SAMPLE_V1_K, INV_SAMPLE_V1_B));
+    assert(data.offset[0] == INV_SamplingConvert(2000U, INV_SAMPLE_V1_K, INV_SAMPLE_V1_B));
+    assert(data.offset[1] == INV_SamplingConvert(1000U, INV_SAMPLE_V2_K, INV_SAMPLE_V2_B));
+    assert(data.offset[2] == INV_SamplingConvert(3000U, INV_SAMPLE_I_K, INV_SAMPLE_I_B));
+    assert(fabsf(data.ac[0] - 200.0f * INV_SAMPLE_V1_K) < 0.001f);
+    assert(fabsf(data.ac[1] - 150.0f * INV_SAMPLE_V2_K) < 0.001f);
+    assert(fabsf(data.ac[2] - 120.0f * INV_SAMPLE_I_K) < 0.001f);
     FeedSampling(2100U, 1100U, 3100U);
     FeedSampling(2000U, 1050U, 3080U);
     FeedSampling(2100U, 1100U, 3100U);
     INV_SamplingGetData(&data);
-    assert(data.offset[0] == 2000.0f); /* 周期内固定使用上一周的偏置。 */
+    /* 周期内固定使用上一周的偏置。 */
+    assert(data.offset[0] == INV_SamplingConvert(2000U, INV_SAMPLE_V1_K, INV_SAMPLE_V1_B));
     INV_SamplingNotifyCycle();
     FeedSampling(2400U, 1400U, 3400U);
     INV_SamplingGetData(&data);
-    assert(data.offset[0] == 2100.0f && data.offset[1] == 1100.0f && data.offset[2] == 3100.0f);
-    assert(data.ac[0] == 300.0f && data.ac[1] == 300.0f && data.ac[2] == 300.0f);
+    assert(data.offset[0] == INV_SamplingConvert(2100U, INV_SAMPLE_V1_K, INV_SAMPLE_V1_B));
+    assert(data.offset[1] == INV_SamplingConvert(1100U, INV_SAMPLE_V2_K, INV_SAMPLE_V2_B));
+    assert(data.offset[2] == INV_SamplingConvert(3100U, INV_SAMPLE_I_K, INV_SAMPLE_I_B));
+    assert(fabsf(data.ac[0] - 300.0f * INV_SAMPLE_V1_K) < 0.001f);
+    assert(fabsf(data.ac[1] - 300.0f * INV_SAMPLE_V2_K) < 0.001f);
+    assert(fabsf(data.ac[2] - 300.0f * INV_SAMPLE_I_K) < 0.001f);
     test_primask = 1U;
     INV_SamplingGetData(&data);
     assert(test_primask == 1U);
@@ -287,15 +321,22 @@ static void CheckSampling(void)
 
 static void CheckMenu(void)
 {
+    INV_Params params;
+
     INV_SetFrequency(50);
     INV_SetAmplitude(10);
+    INV_SetTargetVoltage(0.0f);
     INV_OutputEnable();
     test_keys = "6826D";
     INV_Menu_Run();
-    assert(INV_Freq == 52 && INV_Amp == 10 && !INV_PwmFlag);
+    assert(INV_Freq == 52 && INV_TargetVoltage == 0.0f && INV_Amp == 10 && !INV_PwmFlag);
     test_keys = "86C";
     INV_Menu_Run();
-    assert(INV_Amp == 11 && !INV_PwmFlag);
+    assert(INV_Freq == 52 && INV_TargetVoltage == 0.5f && INV_Amp == 10 && !INV_PwmFlag);
+    INV_GetParams(&params);
+    assert(params.frequency == 52 && params.target_voltage == 0.5f &&
+           params.amplitude == 10 && params.output_enabled == 0 &&
+           params.voltage_rms < 0.0f);
     INV_ShowStandby();
 }
 

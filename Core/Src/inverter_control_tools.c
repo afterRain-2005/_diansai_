@@ -30,17 +30,29 @@ float INV_GetVoltageRms(void)
     return voltage_rms_cached;
 }
 
-/* 每 400 帧才执行一次 RMS/PI，避免 10kHz 中断里持续浮点运算拖垮 CPU。 */
+void INV_GetParams(INV_Params *params)
+{
+    if (params == NULL) return;
+
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    params->frequency = INV_Freq;
+    params->target_voltage = INV_TargetVoltage;
+    params->amplitude = INV_Amp;
+    params->voltage_rms = voltage_rms_cached;
+    params->output_enabled = INV_PwmFlag;
+    __set_PRIMASK(primask);
+}
+
+/* 每个采样帧调用一次：采样平方和必须逐点累加，才能还原 50 Hz 一周期的有效值。
+ * 目标为 0 或输出关闭时只更新实测值供显示，不改幅值。
+ */
 void INV_VoltageControlTick(float voltage)
 {
-    if (!INV_PwmFlag || INV_TargetVoltage <= 0.0f) return;
-
-    control_tick_count++;
-    if (control_tick_count < INV_RMS_WINDOW_SIZE) return;
-    control_tick_count = 0U;
-
-    float rms = INV_UpdateVoltageControl(voltage, INV_TargetVoltage,
-                                         2.0f, 20.0f, 0.02f);
+    float rms = (INV_PwmFlag && INV_TargetVoltage > 0.0f)
+                    ? INV_UpdateVoltageControl(voltage, INV_TargetVoltage,
+                                               2.0f, 20.0f, 0.02f)
+                    : INV_CalculateVoltageRms(voltage);
     if (rms >= 0.0f) voltage_rms_cached = rms;
 }
 
@@ -71,7 +83,9 @@ float INV_CalculateVoltageRms(float voltage)
     rms_index = (rms_index + 1U) % INV_RMS_WINDOW_SIZE;
 
     if (rms_count < INV_RMS_WINDOW_SIZE) return -1.0f;
-    return sqrtf((float)(fmax(rms_square_sum, 0.0) / INV_RMS_WINDOW_SIZE));
+    /* 每样本都会走这里，用浮点倒数代替 double 除法，省掉 __aeabi_ddiv。 */
+    return sqrtf(fmaxf((float)rms_square_sum, 0.0f) *
+                 (1.0f / (float)INV_RMS_WINDOW_SIZE));
 }
 
 void INV_VoltagePI(float target_rms, float measured_rms,
@@ -116,9 +130,16 @@ void INV_VoltagePI(float target_rms, float measured_rms,
 float INV_UpdateVoltageControl(float voltage, float target_rms,
                                float kp, float ki, float dt)
 {
+    /* 每样本只累加平方和（O(1)），满一个窗口才开方并调一次 PI。
+     * 计数必须先加，窗口填满前的样本也要算进本窗口。
+     */
+    control_tick_count++;
     float rms = INV_CalculateVoltageRms(voltage);
-    if (rms != -1.0f)
-        INV_VoltagePI(target_rms, rms, kp, ki, dt);
+    if (rms < 0.0f) return -1.0f;
+
+    if (control_tick_count < INV_RMS_WINDOW_SIZE) return rms;
+    control_tick_count = 0U;
+    INV_VoltagePI(target_rms, rms, kp, ki, dt);
     return rms;
 }
 

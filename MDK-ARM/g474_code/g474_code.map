@@ -4153,32 +4153,32 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1566         12          0          0        724       8216   bipolar_pwm.o
-      1028         28          0         12       1640       8560   inverter_control_tools.o
-       802        162          0          0          0       1866   inverter_menu.o
-       554         20          0          0        100       8233   inverter_sampling.o
-       430          0         17          0         10       4213   keyboard.o
-      1682         24          0          0        456      17696   main.o
-      3834          0        944          0       1025      17267   oled.o
-        64         26        472          0       1536        840   startup_stm32g474xx.o
-       192          0          0          8          4       9605   stm32g4xx_hal.o
-      3258          0          0          0          0      28732   stm32g4xx_hal_adc.o
-       530          0          0          0          0      24044   stm32g4xx_hal_adc_ex.o
-       196          0          0          0          0      11071   stm32g4xx_hal_cortex.o
-       694          0          0          0          0       9217   stm32g4xx_hal_dma.o
-       490          0          0          0          0       5372   stm32g4xx_hal_gpio.o
-       718          0          0          0          0      14028   stm32g4xx_hal_msp.o
-       288          0          0          0          0       9274   stm32g4xx_hal_pwr_ex.o
-      2002          0          0          0          0      10328   stm32g4xx_hal_rcc.o
-       726          0          0          0          0      11414   stm32g4xx_hal_rcc_ex.o
-      1426          0          0          0          0      26264   stm32g4xx_hal_spi.o
-      3006         14          0          0          0      63870   stm32g4xx_hal_tim.o
-       732         64          0          0          0      30938   stm32g4xx_hal_tim_ex.o
-       138          0          0          0          0       7309   stm32g4xx_it.o
-        18          0         16          4          0       2766   system_stm32g4xx.o
+      1566         12          0          0        724       8225   bipolar_pwm.o
+      1028         28          0         12       1640       8569   inverter_control_tools.o
+       802        162          0          0          0       1875   inverter_menu.o
+       554         20          0          0        100       8242   inverter_sampling.o
+       430          0         17          0         10       4222   keyboard.o
+      1682         24          0          0        456      17705   main.o
+      3834          0        944          0       1025      17276   oled.o
+        64         26        472          0       1536        836   startup_stm32g474xx.o
+       192          0          0          8          4       9614   stm32g4xx_hal.o
+      3258          0          0          0          0      28741   stm32g4xx_hal_adc.o
+       530          0          0          0          0      24053   stm32g4xx_hal_adc_ex.o
+       196          0          0          0          0      11080   stm32g4xx_hal_cortex.o
+       694          0          0          0          0       9226   stm32g4xx_hal_dma.o
+       490          0          0          0          0       5381   stm32g4xx_hal_gpio.o
+       718          0          0          0          0      14037   stm32g4xx_hal_msp.o
+       288          0          0          0          0       9283   stm32g4xx_hal_pwr_ex.o
+      2002          0          0          0          0      10337   stm32g4xx_hal_rcc.o
+       726          0          0          0          0      11423   stm32g4xx_hal_rcc_ex.o
+      1426          0          0          0          0      26273   stm32g4xx_hal_spi.o
+      3006         14          0          0          0      63879   stm32g4xx_hal_tim.o
+       732         64          0          0          0      30947   stm32g4xx_hal_tim_ex.o
+       138          0          0          0          0       7318   stm32g4xx_it.o
+        18          0         16          4          0       2775   system_stm32g4xx.o
 
     ----------------------------------------------------------------------
-     24508        350       1484         24       5504     331123   Object Totals
+     24508        350       1484         24       5504     331317   Object Totals
          0          0         32          0          0          0   (incl. Generated)
        134          0          3          0          9          0   (incl. Padding)
 
@@ -4282,8 +4282,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     33850        848       1750         24       5600     333551   Grand Totals
-     33850        848       1750         24       5600     333551   ELF Image Totals
+     33850        848       1750         24       5600     333745   Grand Totals
+     33850        848       1750         24       5600     333745   ELF Image Totals
      33850        848       1750         24          0          0   ROM Totals
 
 ==============================================================================
