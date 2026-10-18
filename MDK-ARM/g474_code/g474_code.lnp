@@ -5,6 +5,7 @@
 "g474_code\bipolar_pwm.o"
 "g474_code\inverter_menu.o"
 "g474_code\inverter_control_tools.o"
+"g474_code\inverter_sampling.o"
 "g474_code\main.o"
 "g474_code\stm32g4xx_it.o"
 "g474_code\stm32g4xx_hal_msp.o"

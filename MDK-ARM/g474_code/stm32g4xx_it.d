@@ -27,4 +27,4 @@ g474_code/stm32g4xx_it.o: ..\Core\Src\stm32g4xx_it.c ..\Core\Inc\main.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_spi_ex.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim_ex.h \
-  ..\Core\Inc\stm32g4xx_it.h ..\Core\Inc\Bipolar_PWM.h
+  ..\Core\Inc\stm32g4xx_it.h ..\Core\Inc\inverter_control_tools.h

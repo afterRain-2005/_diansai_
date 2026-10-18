@@ -1,5 +1,6 @@
 g474_code/inverter_menu.o: ..\Core\Src\inverter_menu.c \
-  ..\Core\Inc\inverter_menu.h ..\Core\Inc\main.h \
+  ..\Core\Inc\inverter_menu.h ..\Core\Inc\inverter_control_tools.h \
+  ..\Core\Inc\oled.h ..\Core\Inc\main.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal.h \
   ..\Core\Inc\stm32g4xx_hal_conf.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_rcc.h \
@@ -28,5 +29,4 @@ g474_code/inverter_menu.o: ..\Core\Src\inverter_menu.c \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_spi_ex.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim_ex.h \
-  ..\Core\Inc\Bipolar_PWM.h ..\Core\Inc\inverter_math.h \
-  ..\Core\Inc\oled.h ..\Core\Inc\Keyboard.h
+  ..\Core\Inc\Keyboard.h
