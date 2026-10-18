@@ -33,8 +33,8 @@ extern volatile int32_t INV_Amp;     /* 调制幅度，%；闭环下由 PI 自�
 extern volatile int32_t INV_PwmFlag; /* 软件启停命令，不代表硬件输出测量值 */
 extern volatile int32_t INV_LoopEnable;        /* 1=闭环自动调幅，0=开环 */
 extern volatile int32_t INV_FeedbackChannel;   /* 反馈通道：0=V1，1=V2 */
-extern volatile float INV_VoltageKp;           /* 比例增益，%/V */
-extern volatile float INV_VoltageKi;           /* 积分增益，%/(V*s) */
+extern volatile float INV_VoltageKp = 2.0f;           /* 比例增益，%/V */
+extern volatile float INV_VoltageKi = 70.0f;           /* 积分增益，%/(V*s) */
 extern volatile float INV_TargetVoltage; /* 闭环目标电压（RMS） */
 extern volatile float INV_Vrms;          /* 最近 RMS 窗口结果，未满窗为 -1 */
 
