@@ -1,4 +1,5 @@
 #include "inverter_sampling.h"
+#include "inverter_control_tools.h"
 
 extern ADC_HandleTypeDef hadc1;
 
@@ -16,7 +17,7 @@ static float raw_offset[INV_SAMPLE_CHANNELS];
 
 float INV_SamplingConvert(uint16_t raw, float k, float b)
 {
-    return k * raw - b;
+    return k * raw + b;
 }
 
 void INV_SamplingNotifyCycle(void)
@@ -59,6 +60,8 @@ static void SamplingProcessFrame(const volatile uint16_t *raw)
     }
     cycle_count++;
     sampling_data.sequence++;
+    if (sampling_data.offset_valid != 0U)
+        INV_VoltageControlTick(sampling_data.ac[0]);
 }
 
 HAL_StatusTypeDef INV_SamplingStart(void)

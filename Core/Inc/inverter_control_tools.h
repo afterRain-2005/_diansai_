@@ -16,11 +16,17 @@
 #define INV_RMS_WINDOW_SIZE 400U
 
 extern volatile int32_t INV_Freq;    /* 基波频率，Hz */
-extern volatile int32_t INV_Amp;     /* 调制幅度，% */
+extern volatile int32_t INV_Amp;     /* 调制幅度，%；闭环下由 PI 自动写入 */
 extern volatile int32_t INV_PwmFlag; /* 软件启停命令，不代表硬件输出测量值 */
+extern volatile float INV_TargetVoltage; /* 闭环目标电压（RMS） */
 
 void INV_SetFrequency(int32_t frequency);
 void INV_SetAmplitude(int32_t amplitude);
+void INV_SetTargetVoltage(float target);
+/* 最近一个 RMS 窗口的有效值；窗口未满返回 -1.0f。 */
+float INV_GetVoltageRms(void);
+/* 每个采样帧调用一次：O(1) 累加，窗口满后执行一次 PI 写 INV_Amp。 */
+void INV_VoltageControlTick(float voltage);
 /* 单组状态，须在同一执行上下文串行调用；开始闭环或改变采样配置时复位。
  * 复位不改变 INV_Amp，关闭输出时也会自动复位。
  */

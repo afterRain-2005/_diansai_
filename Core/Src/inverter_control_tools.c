@@ -9,11 +9,40 @@ volatile int32_t INV_Freq = INV_FREQ_DEFAULT;
 volatile int32_t INV_Amp = INV_AMP_DEFAULT;
 volatile int32_t INV_PwmFlag;
 
+volatile float INV_TargetVoltage = 0.0f;
+
 static float rms_squares[INV_RMS_WINDOW_SIZE];
 static uint32_t rms_index, rms_count;
 static double rms_square_sum;
 static float voltage_integral;
 static uint32_t voltage_pi_initialized;
+static uint32_t control_tick_count;
+static volatile float voltage_rms_cached = -1.0f;
+
+void INV_SetTargetVoltage(float target)
+{
+    if (target < 0.0f) target = 0.0f;
+    INV_TargetVoltage = target;
+}
+
+float INV_GetVoltageRms(void)
+{
+    return voltage_rms_cached;
+}
+
+/* 每 400 帧才执行一次 RMS/PI，避免 10kHz 中断里持续浮点运算拖垮 CPU。 */
+void INV_VoltageControlTick(float voltage)
+{
+    if (!INV_PwmFlag || INV_TargetVoltage <= 0.0f) return;
+
+    control_tick_count++;
+    if (control_tick_count < INV_RMS_WINDOW_SIZE) return;
+    control_tick_count = 0U;
+
+    float rms = INV_UpdateVoltageControl(voltage, INV_TargetVoltage,
+                                         2.0f, 20.0f, 0.02f);
+    if (rms >= 0.0f) voltage_rms_cached = rms;
+}
 
 void INV_ResetVoltageControl(void)
 {
@@ -22,6 +51,8 @@ void INV_ResetVoltageControl(void)
     rms_square_sum = 0.0;
     voltage_integral = 0.0f;
     voltage_pi_initialized = 0U;
+    control_tick_count = 0U;
+    voltage_rms_cached = -1.0f;
 }
 
 float INV_CalculateVoltageRms(float voltage)
