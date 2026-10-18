@@ -10,8 +10,9 @@
 #define INV_AMP_MAX       99
 #define INV_AMP_DEFAULT   90
 
-/* TIM1 Update 名义触发 20 kHz，400 点对应默认 50 Hz 的一周（20 ms）。
- * 接入闭环前须实测采样率；基波频率改变时，固定窗口不一定覆盖整数周。
+/* 默认窗口：TIM1 更新名义触发 20 kHz 时，400 点对应 50 Hz 的一周（20 ms）。
+ * 实际窗口由 INV_SetFrequency 按 20000/频率 四舍五入重算（30 Hz 667 点，
+ * 100 Hz 200 点），切频时复位闭环等新窗口填满；接入前须实测采样率。
  */
 #define INV_RMS_WINDOW_SIZE 400U
 
@@ -30,6 +31,7 @@ typedef struct
     int32_t output_enabled; /* 软件启停命令 */
 } INV_Params;
 
+/* 改频率的同时重算 TIM5 重载值和 RMS 窗口；窗口长度变化时复位闭环状态。 */
 void INV_SetFrequency(int32_t frequency);
 void INV_SetAmplitude(int32_t amplitude);
 void INV_SetTargetVoltage(float target);
@@ -46,7 +48,8 @@ void INV_ResetVoltageControl(void);
  * 窗口未满时返回 -1.0f；调用方须保证输入及平方运算结果为有限数值。
  */
 float INV_CalculateVoltageRms(float voltage);
-/* 位置式 PI，通过 INV_SetAmplitude 写入百分比输出。
+/* 增量式 PI：Δu = Kp*(e-e_prev) + Ki*e*dt，叠在上一次幅值上再调 INV_SetAmplitude。
+ * 没有积分累加器，幅值饱和后不会积攒反向退出量；首次调用取 e_prev=0。
  * kp: %/V，ki: %/(V*s)，dt: 两次 PI 调用间隔，单位 s。
  * RMS 或增益为负、dt 不大于 0、输出未启用时不调整幅值。
  * 调用方须保证参数及中间运算结果为有限数值。
@@ -54,7 +57,7 @@ float INV_CalculateVoltageRms(float voltage);
 void INV_VoltagePI(float target_rms, float measured_rms,
                    float kp, float ki, float dt);
 /* 每个新电压样本调用一次：窗口未满时只累计样本，之后每满一个窗口执行一次 PI。
- * 返回当前 RMS，未满窗返回 -1.0f；dt 为两次 PI 的间隔（s），即一个窗口时长。
+ * 返回当前 RMS，未满窗返回 -1.0f；窗口长度随频率变化，dt 传一个窗口时长（1/频率）。
  * 开始前先调用 INV_ResetVoltageControl；不要再对同一个样本单独调用 RMS/PI。
  */
 float INV_UpdateVoltageControl(float voltage, float target_rms,

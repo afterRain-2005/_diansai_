@@ -5,16 +5,27 @@
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim1;
 
+/* RMS 采样率 = TIM1 更新事件频率：16 MHz、中心对齐 ARR=800，上下溢出各触发一次。 */
+#define INV_SAMPLE_RATE     (INV_TIM_CLK / INV_PERIOD)
+/* 最低频率 30 Hz 时窗口最长（20000/30 ≈ 667 点），环形缓冲按最长窗口开。 */
+#define INV_RMS_WINDOW_MAX  ((INV_SAMPLE_RATE + INV_FREQ_MIN / 2U) / INV_FREQ_MIN)
+
+#define INV_VOLTAGE_KP      2.0f  /* %/V */
+#define INV_VOLTAGE_KI      20.0f /* %/(V*s) */
+
 volatile int32_t INV_Freq = INV_FREQ_DEFAULT;
 volatile int32_t INV_Amp = INV_AMP_DEFAULT;
 volatile int32_t INV_PwmFlag;
 
 volatile float INV_TargetVoltage = 0.0f;
 
-static float rms_squares[INV_RMS_WINDOW_SIZE];
+static float rms_squares[INV_RMS_WINDOW_MAX];
+static uint32_t rms_window = INV_RMS_WINDOW_SIZE;
+static float rms_window_recip = 1.0f / (float)INV_RMS_WINDOW_SIZE;
 static uint32_t rms_index, rms_count;
 static double rms_square_sum;
-static float voltage_integral;
+static volatile float control_dt = 1.0f / (float)INV_FREQ_DEFAULT;
+static float voltage_pi_last_error;
 static uint32_t voltage_pi_initialized;
 static uint32_t control_tick_count;
 static volatile float voltage_rms_cached = -1.0f;
@@ -44,14 +55,15 @@ void INV_GetParams(INV_Params *params)
     __set_PRIMASK(primask);
 }
 
-/* 每个采样帧调用一次：采样平方和必须逐点累加，才能还原 50 Hz 一周期的有效值。
+/* 每个采样帧调用一次：采样平方和必须逐点累加，才能还原一个基波周期的有效值。
  * 目标为 0 或输出关闭时只更新实测值供显示，不改幅值。
  */
 void INV_VoltageControlTick(float voltage)
 {
     float rms = (INV_PwmFlag && INV_TargetVoltage > 0.0f)
                     ? INV_UpdateVoltageControl(voltage, INV_TargetVoltage,
-                                               2.0f, 20.0f, 0.02f)
+                                               INV_VOLTAGE_KP, INV_VOLTAGE_KI,
+                                               control_dt)
                     : INV_CalculateVoltageRms(voltage);
     if (rms >= 0.0f) voltage_rms_cached = rms;
 }
@@ -61,7 +73,7 @@ void INV_ResetVoltageControl(void)
     rms_index = 0U;
     rms_count = 0U;
     rms_square_sum = 0.0;
-    voltage_integral = 0.0f;
+    voltage_pi_last_error = 0.0f;
     voltage_pi_initialized = 0U;
     control_tick_count = 0U;
     voltage_rms_cached = -1.0f;
@@ -73,19 +85,19 @@ float INV_CalculateVoltageRms(float voltage)
 
     /* 窗口未满时忽略旧数组内容，因此复位无需清空整个缓冲区。
      * 使用 double 累加，减小长时间滑动加减的舍入误差。
+     * 窗口长度随基波频率变化，等于名义采样率除以频率。
      */
-    if (rms_count == INV_RMS_WINDOW_SIZE)
+    if (rms_count == rms_window)
         rms_square_sum -= rms_squares[rms_index];
     else
         rms_count++;
     rms_squares[rms_index] = square;
     rms_square_sum += square;
-    rms_index = (rms_index + 1U) % INV_RMS_WINDOW_SIZE;
+    if (++rms_index >= rms_window) rms_index = 0U;
 
-    if (rms_count < INV_RMS_WINDOW_SIZE) return -1.0f;
-    /* 每样本都会走这里，用浮点倒数代替 double 除法，省掉 __aeabi_ddiv。 */
-    return sqrtf(fmaxf((float)rms_square_sum, 0.0f) *
-                 (1.0f / (float)INV_RMS_WINDOW_SIZE));
+    if (rms_count < rms_window) return -1.0f;
+    /* 每样本都会走这里，用预存的浮点倒数代替 double 除法，省掉 __aeabi_ddiv。 */
+    return sqrtf(fmaxf((float)rms_square_sum, 0.0f) * rms_window_recip);
 }
 
 void INV_VoltagePI(float target_rms, float measured_rms,
@@ -99,30 +111,15 @@ void INV_VoltagePI(float target_rms, float measured_rms,
     if (target_rms < 0.0f || measured_rms < 0.0f ||
         kp < 0.0f || ki < 0.0f || dt <= 0.0f) return;
 
+    /* 增量式：Δu = Kp*(e-e_prev) + Ki*e*dt，叠在上一次幅值上。
+     * 没有积分累加器，幅值被钳位后不会积攒反向退出量；首次调用取 e_prev=0。
+     */
     float error = target_rms - measured_rms;
-    float proportional = kp * error;
-    float integral = voltage_pi_initialized ? voltage_integral : (float)INV_Amp;
-    float increment = ki * error * dt;
-    float candidate = integral + increment;
-    float output = proportional + candidate;
-
-    /* 达到幅值边界时，禁止积分继续向饱和方向增长，允许反向退出。 */
-    float previous_output = proportional + integral;
-    if (output > INV_AMP_MAX && increment > 0.0f)
-    {
-        if (previous_output < INV_AMP_MAX)
-            integral += INV_AMP_MAX - previous_output;
-    }
-    else if (output < INV_AMP_MIN && increment < 0.0f)
-    {
-        if (previous_output > INV_AMP_MIN)
-            integral += INV_AMP_MIN - previous_output;
-    }
-    else
-        integral = candidate;
-    output = proportional + integral;
+    float previous_error = voltage_pi_initialized ? voltage_pi_last_error : 0.0f;
+    float output = (float)INV_Amp + kp * (error - previous_error) + ki * error * dt;
     output = fminf(fmaxf(output, (float)INV_AMP_MIN), (float)INV_AMP_MAX);
-    voltage_integral = integral;
+
+    voltage_pi_last_error = error;
     voltage_pi_initialized = 1U;
     INV_SetAmplitude((int32_t)(output + 0.5f));
 }
@@ -137,7 +134,7 @@ float INV_UpdateVoltageControl(float voltage, float target_rms,
     float rms = INV_CalculateVoltageRms(voltage);
     if (rms < 0.0f) return -1.0f;
 
-    if (control_tick_count < INV_RMS_WINDOW_SIZE) return rms;
+    if (control_tick_count < rms_window) return rms;
     control_tick_count = 0U;
     INV_VoltagePI(target_rms, rms, kp, ki, dt);
     return rms;
@@ -149,8 +146,21 @@ void INV_SetFrequency(int32_t frequency)
     if (frequency > INV_FREQ_MAX) frequency = INV_FREQ_MAX;
 
     uint32_t rate = INV_SAMP_NUMBER * (uint32_t)frequency;
+    uint32_t window = (INV_SAMPLE_RATE + (uint32_t)frequency / 2U) / (uint32_t)frequency;
+
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
     INV_Freq = frequency;
     __HAL_TIM_SET_AUTORELOAD(&htim5, (INV_TIM_CLK + rate / 2U) / rate - 1U);
+    control_dt = 1.0f / (float)frequency;
+    if (window != rms_window)
+    {
+        /* 窗口长度变了，旧样本按新长度滑动会串窗，清空后等新窗口填满。 */
+        rms_window = window;
+        rms_window_recip = 1.0f / (float)window;
+        INV_ResetVoltageControl();
+    }
+    __set_PRIMASK(primask);
 }
 
 void INV_SetAmplitude(int32_t amplitude)

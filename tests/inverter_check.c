@@ -163,6 +163,19 @@ static void CheckControl(void)
 
 static void CheckVoltageControl(void)
 {
+    /* 窗口长度 = 名义采样率 / 基波频率，切频时清空旧窗口等新窗口填满。 */
+    INV_SetFrequency(INV_FREQ_MAX);
+    assert(rms_window == 200U);
+    INV_ResetVoltageControl();
+    for (uint32_t i = 0; i < 199U; i++)
+        assert(INV_CalculateVoltageRms(10.0f) < 0.0f);
+    assert(fabsf(INV_CalculateVoltageRms(10.0f) - 10.0f) < 0.001f);
+    INV_SetFrequency(INV_FREQ_MIN);
+    assert(rms_window == 667U);
+    assert(INV_CalculateVoltageRms(10.0f) < 0.0f);
+    INV_SetFrequency(INV_FREQ_DEFAULT);
+    assert(rms_window == INV_RMS_WINDOW_SIZE);
+
     INV_SetAmplitude(50);
     INV_PwmFlag = 1;
     INV_ResetVoltageControl();
@@ -202,28 +215,28 @@ static void CheckVoltageControl(void)
     INV_PwmFlag = 1;
     INV_ResetVoltageControl();
     INV_VoltagePI(110.0f, 100.0f, 1.0f, 1.0f, 0.1f);
-    assert(INV_Amp == 61); /* 50 + Kp*10 + Ki*10*0.1 */
+    assert(INV_Amp == 61); /* 50 + Kp*e + Ki*e*dt */
     INV_VoltagePI(100.0f, 100.0f, 1.0f, 1.0f, 0.1f);
-    assert(INV_Amp == 51); /* 积分保留，比例项归零。 */
+    assert(INV_Amp == 51); /* 误差回 0，Kp*Δe 把增量退回去。 */
     INV_VoltagePI(100.0f, -1.0f, 1.0f, 1.0f, 0.1f);
     INV_VoltagePI(100.0f, 90.0f, 1.0f, 1.0f, 0.0f);
     assert(INV_Amp == 51);
     for (uint32_t i = 0; i < 1000U; i++)
         INV_VoltagePI(200.0f, 0.0f, 1.0f, 1.0f, 0.1f);
-    assert(INV_Amp == INV_AMP_MAX);
+    assert(INV_Amp == INV_AMP_MAX); /* 上限饱和，增量式不额外积攒输出。 */
     INV_VoltagePI(100.0f, 100.0f, 1.0f, 1.0f, 0.1f);
-    assert(INV_Amp == 51); /* 长时间上限饱和未造成积分累积。 */
+    assert(INV_Amp == INV_AMP_MIN); /* 误差从 200 直接回 0，Kp*Δe 一步退出。 */
     for (uint32_t i = 0; i < 1000U; i++)
         INV_VoltagePI(0.0f, 200.0f, 1.0f, 1.0f, 0.1f);
     assert(INV_Amp == INV_AMP_MIN);
     INV_VoltagePI(100.0f, 100.0f, 1.0f, 1.0f, 0.1f);
-    assert(INV_Amp == 51);
+    assert(INV_Amp == INV_AMP_MAX); /* 误差从 -200 回 0，Kp*Δe 直接顶到上限。 */
     INV_SetAmplitude(50);
     INV_ResetVoltageControl();
     INV_VoltagePI(100.0f, 90.0f, 0.0f, 100.0f, 1.0f);
     assert(INV_Amp == INV_AMP_MAX);
     INV_VoltagePI(100.0f, 100.0f, 0.0f, 100.0f, 1.0f);
-    assert(INV_Amp == INV_AMP_MAX); /* 纯积分跨越边界后仍能保持输出。 */
+    assert(INV_Amp == INV_AMP_MAX); /* 误差归零后 Δu 为 0，输出保持。 */
     INV_OutputDisable();
     INV_VoltagePI(200.0f, 0.0f, 1.0f, 1.0f, 0.1f);
     assert(INV_Amp == INV_AMP_MAX);
