@@ -244,7 +244,6 @@ static void CheckVoltageControl(void)
     test_tick = 0U;
     INV_SetLoopEnable(1);          /* 复位并记录 PI 节拍基准 */
     INV_SetTargetVoltage(20.0f);
-    INV_SetVoltageGains(1.0f, 1.0f);
     INV_SetFeedbackChannel(0);
     assert(INV_GetLoopState() == INV_LOOP_WAIT);
     for (uint32_t i = 0; i < INV_RMS_WINDOW_SIZE; i++)
@@ -252,7 +251,7 @@ static void CheckVoltageControl(void)
     assert(INV_GetLoopState() == INV_LOOP_READY);
     test_tick += 10U;
     INV_VoltageControlTick(10.0f);
-    assert(INV_Amp == 60); /* 50 + Kp*10 + Ki*10*0.01 */
+    assert(INV_Amp == 77); /* 50 + Kp*10 + Ki*10*0.01，增益取宏值 2/70 */
     INV_PwmFlag = 0;
     INV_SetLoopEnable(0);
     INV_SetTargetVoltage(0.0f);
@@ -337,52 +336,54 @@ static void CheckSampling(void)
     INV_SamplingStop();
 }
 
+static void RunMenuKeys(const char *keys)
+{
+    test_keys = keys;
+    while (*test_keys != '\0')
+        INV_Menu_TickISR();
+}
+
 static void CheckMenu(void)
 {
     INV_SetFrequency(50);
     INV_SetAmplitude(10);
     INV_SetTargetVoltage(0.0f);
     INV_SetLoopEnable(0);
-    INV_SetVoltageGains(INV_VOLTAGE_KP_DEFAULT, INV_VOLTAGE_KI_DEFAULT);
     INV_SetFeedbackChannel(0);
     INV_OutputEnable();
     assert(INV_PwmFlag);
 
-    /* FREQ 项：6 三次 50 -> 53；退出菜单时输出已关闭。 */
-    test_keys = "666D";
-    INV_Menu_Run();
+    INV_Menu_Init();
+    assert(INV_Menu_TakeUpdate() == 1U);
+    assert(INV_Menu_TakeUpdate() == 0U);
+
+    /* D 进入菜单，6 三次 50 -> 53，D 退出；进入时输出关闭。 */
+    RunMenuKeys("D666D");
     assert(INV_Freq == 53 && !INV_PwmFlag);
 
     /* TGT ±0.5V 与开环 AMP 手动调整。 */
-    test_keys = "866866D";
-    INV_Menu_Run();
+    RunMenuKeys("D866866D");
     assert(INV_TargetVoltage == 1.0f && INV_Amp == 12);
 
-    /* LOOP 使能、KP +0.01、KI +0.1、FB 切到 V2。 */
-    test_keys = "8886868686D";
-    INV_Menu_Run();
+    /* LOOP 使能、FB 切到 V2；Kp/Ki 不再出现在菜单里。 */
+    RunMenuKeys("D888686D");
     assert(INV_LoopEnable == 1 && INV_FeedbackChannel == 1);
-    assert(fabsf(INV_VoltageKp - 2.01f) < 0.0001f);
-    assert(fabsf(INV_VoltageKi - 20.1f) < 0.001f);
 
     /* 闭环下 AMP 手动调整被拒绝。 */
-    test_keys = "8866D";
-    INV_Menu_Run();
+    RunMenuKeys("D8866D");
     assert(INV_Amp == 12);
 
     /* 目标电压下限钳位到 0，进入 SETUP 后禁止开输出。 */
-    test_keys = "84444D";
-    INV_Menu_Run();
+    RunMenuKeys("D84444D");
     assert(INV_TargetVoltage == 0.0f);
     INV_OutputEnable();
     assert(!INV_PwmFlag);
 
     /* 2 键反向循环。 */
-    test_keys = "22D";
-    INV_Menu_Run();
+    RunMenuKeys("D22D");
     INV_SetLoopEnable(0);
     INV_SetFeedbackChannel(0);
-    INV_ShowStandby();
+    INV_Menu_Draw();
 }
 
 static void CheckOled(void)

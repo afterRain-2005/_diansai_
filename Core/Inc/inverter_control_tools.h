@@ -15,11 +15,11 @@
  */
 #define INV_RMS_WINDOW_SIZE 400U
 
-/* 闭环 PI 默认增益：kp %/V，ki %/(V*s)。 */
-#define INV_VOLTAGE_KP_DEFAULT 2.0f
-#define INV_VOLTAGE_KI_DEFAULT 20.0f
+/* 闭环 PI 增益，编译期固定，改后重新编译；kp 单位 %/V，ki 单位 %/(V*s)。 */
+#define INV_VOLTAGE_KP 2.0f
+#define INV_VOLTAGE_KI 70.0f
 
-/* 闭环运行状态；SETUP 表示已使能闭环但目标或增益未配置。 */
+/* 闭环运行状态；SETUP 表示已使能闭环但目标未配置（或宏增益为 0）。 */
 enum
 {
     INV_LOOP_OPEN = 0,  /* 开环，手动调幅 */
@@ -33,8 +33,6 @@ extern volatile int32_t INV_Amp;     /* 调制幅度，%；闭环下由 PI 自�
 extern volatile int32_t INV_PwmFlag; /* 软件启停命令，不代表硬件输出测量值 */
 extern volatile int32_t INV_LoopEnable;        /* 1=闭环自动调幅，0=开环 */
 extern volatile int32_t INV_FeedbackChannel;   /* 反馈通道：0=V1，1=V2 */
-extern volatile float INV_VoltageKp = 2.0f;           /* 比例增益，%/V */
-extern volatile float INV_VoltageKi = 70.0f;           /* 积分增益，%/(V*s) */
 extern volatile float INV_TargetVoltage; /* 闭环目标电压（RMS） */
 extern volatile float INV_Vrms;          /* 最近 RMS 窗口结果，未满窗为 -1 */
 
@@ -43,7 +41,6 @@ void INV_SetAmplitude(int32_t amplitude);
 void INV_SetTargetVoltage(float target);
 void INV_SetLoopEnable(int32_t enable);
 void INV_SetFeedbackChannel(int32_t channel);
-void INV_SetVoltageGains(float kp, float ki);
 /* 当前闭环状态，见 INV_LOOP_* 枚举。 */
 uint32_t INV_GetLoopState(void);
 /* 最近一个 RMS 窗口的有效值；窗口未满返回 -1.0f。 */

@@ -7,32 +7,39 @@
 /* 128x64 屏，字模固定 8x16：每行 16 字符 / 128px，共 4 行。
  * 字符串超过 16 字符会被 OLED_ShowString 静默截断。
  *
- * 单页界面，7 个选项同屏：浏览态显示 FREQ/OUT、TGT/LOOP、AMP/KP、FB/RMS；
- * 编辑态第 4 行改为 KI/FB，避免 KI 调完看不见。2/8 在选项间循环，4/6 调整；
- * selected 为 -1 表示浏览态。
+ * 单页界面，5 个选项同屏：FREQ/OUT、TGT/LOOP、AMP、FB/RMS。
+ * 2/8 在选项间循环，4/6 调整；menu_selected 为 -1 表示浏览态。
+ * 按键和菜单状态在 1 ms 中断里处理，OLED 刷新留在主循环，
+ * 避免 SPI 阻塞打断 TIM5/ADC 中断。
+ * Kp/Ki 固定为 inverter_control_tools.h 的宏，不在此调整。
  */
 enum
 {
     MENU_FREQ, MENU_TGT, MENU_AMP, MENU_LOOP,
-    MENU_KP, MENU_KI, MENU_FB, MENU_COUNT
+    MENU_FB, MENU_COUNT
 };
 #define MENU_NONE (-1)
 
-static void DrawPage(int32_t selected)
+/* 中断写、主循环读；读数时屏蔽中断。 */
+static volatile int32_t menu_selected = MENU_NONE;
+static volatile uint8_t menu_dirty = 1U;
+static volatile uint8_t menu_running;
+static uint32_t menu_refresh_ms;
+
+static void DrawPage(void)
 {
-    char buffer[17];
+    char buffer[48];
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
+    int32_t selected = menu_selected;
     float rms = INV_Vrms;
     int32_t enabled = INV_PwmFlag;
     int32_t frequency = INV_Freq, amplitude = INV_Amp;
     int32_t loop = INV_LoopEnable, feedback = INV_FeedbackChannel;
-    float target = INV_TargetVoltage, kp = INV_VoltageKp, ki = INV_VoltageKi;
+    float target = INV_TargetVoltage;
     __set_PRIMASK(primask);
 
     uint32_t target_tenths = (uint32_t)(target * 10.0f + 0.5f);
-    uint32_t kp_hundredths = (uint32_t)(kp * 100.0f + 0.5f);
-    uint32_t ki_tenths = (uint32_t)(ki * 10.0f + 0.5f);
 
     OLED_Clear();
     (void)snprintf(buffer, sizeof(buffer), "%cOUT:%s F:%ld",
@@ -48,107 +55,125 @@ static void DrawPage(int32_t selected)
                    loop ? "CL" : "OP");
     OLED_ShowString(0, 16, buffer, 16);
 
-    (void)snprintf(buffer, sizeof(buffer), "%cA:%ld%% %cKP:%lu.%02lu",
-                   selected == MENU_AMP ? '>' : ' ', (long)amplitude,
-                   selected == MENU_KP ? '>' : ' ',
-                   (unsigned long)(kp_hundredths / 100U),
-                   (unsigned long)(kp_hundredths % 100U));
+    (void)snprintf(buffer, sizeof(buffer), "%cA:%ld%%",
+                   selected == MENU_AMP ? '>' : ' ', (long)amplitude);
     OLED_ShowString(0, 32, buffer, 16);
 
-    if (selected == MENU_NONE)
-    {
-        /* 浏览态：实测输出有效值，窗口未满显示占位。 */
-        if (rms < 0.0f)
-            (void)snprintf(buffer, sizeof(buffer), "FB:V%ld RMS:--.-",
-                           (long)feedback + 1L);
-        else
-        {
-            uint32_t rms_tenths = (uint32_t)(rms * 10.0f + 0.5f);
-            (void)snprintf(buffer, sizeof(buffer), "FB:V%ld RMS:%lu.%lu",
-                           (long)feedback + 1L,
-                           (unsigned long)(rms_tenths / 10U),
-                           (unsigned long)(rms_tenths % 10U));
-        }
-    }
+    /* 第 4 行：反馈通道和实测 RMS，窗口未满显示占位。 */
+    if (rms < 0.0f)
+        (void)snprintf(buffer, sizeof(buffer), "%cFB:V%ld RMS:--.-",
+                       selected == MENU_FB ? '>' : ' ', (long)feedback + 1L);
     else
     {
-        /* 编辑态：第 4 行留给 KI 和反馈通道。 */
-        (void)snprintf(buffer, sizeof(buffer), "%cKI:%lu.%lu %cFB:V%ld",
-                       selected == MENU_KI ? '>' : ' ',
-                       (unsigned long)(ki_tenths / 10U),
-                       (unsigned long)(ki_tenths % 10U),
+        uint32_t rms_tenths = (uint32_t)(rms * 10.0f + 0.5f);
+        (void)snprintf(buffer, sizeof(buffer), "%cFB:V%ld RMS:%lu.%lu",
                        selected == MENU_FB ? '>' : ' ',
-                       (long)feedback + 1L);
+                       (long)feedback + 1L,
+                       (unsigned long)(rms_tenths / 10U),
+                       (unsigned long)(rms_tenths % 10U));
     }
     OLED_ShowString(0, 48, buffer, 16);
     OLED_Refresh();
 }
 
-void INV_ShowStandby(void)
+void INV_Menu_Init(void)
 {
-    DrawPage(MENU_NONE);
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    menu_selected = MENU_NONE;
+    menu_refresh_ms = 0U;
+    menu_dirty = 1U;
+    menu_running = 1U;
+    __set_PRIMASK(primask);
 }
 
-void INV_Menu_Run(void)
+uint8_t INV_Menu_TakeUpdate(void)
 {
-    int32_t selected = 0;
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    uint8_t dirty = menu_dirty;
+    menu_dirty = 0U;
+    __set_PRIMASK(primask);
+    return dirty;
+}
 
-    INV_OutputDisable();
-    DrawPage(selected);
+void INV_Menu_Draw(void)
+{
+    DrawPage();
+}
 
-    while (1)
+/* 只在中断里调用，menu_selected 已保证不是 MENU_NONE。 */
+static void MenuAdjust(int32_t step)
+{
+    switch (menu_selected)
     {
-        char key = Keyboard_GetKey();
+    case MENU_FREQ:
+        INV_SetFrequency(INV_Freq + step);
+        break;
+    case MENU_TGT:
+        INV_SetTargetVoltage(INV_TargetVoltage + 0.5f * step);
+        break;
+    case MENU_AMP:
+        /* 闭环时幅值由 PI 控制，手动调整会被覆盖。 */
+        if (!INV_LoopEnable) INV_SetAmplitude(INV_Amp + step);
+        break;
+    case MENU_LOOP:
+        INV_SetLoopEnable(step > 0);
+        break;
+    case MENU_FB:
+        INV_SetFeedbackChannel(step > 0 ? 1 : 0);
+        break;
+    default:
+        break;
+    }
+}
 
-        if (key == 'D') return;                 /* 退出编辑，回浏览态 */
-        if (key == 'C') { INV_OutputDisable(); return; }
+void INV_Menu_TickISR(void)
+{
+    if (!menu_running) return;
 
-        if (key == '2' || key == '8')
-        {
-            selected = key == '8' ? selected + 1 : selected + MENU_COUNT - 1;
-            selected %= MENU_COUNT;
-        }
-        else if (key == '4' || key == '6')
-        {
-            int32_t step = key == '6' ? 1 : -1;
-            switch (selected)
-            {
-            case MENU_FREQ:
-                INV_SetFrequency(INV_Freq + step);
-                break;
-            case MENU_TGT:
-                INV_SetTargetVoltage(INV_TargetVoltage + 0.5f * step);
-                break;
-            case MENU_AMP:
-                /* 闭环时幅值由 PI 控制，手动调整会被覆盖。 */
-                if (!INV_LoopEnable) INV_SetAmplitude(INV_Amp + step);
-                break;
-            case MENU_LOOP:
-                INV_SetLoopEnable(step > 0);
-                break;
-            case MENU_KP:
-                INV_SetVoltageGains(
-                    ((int32_t)(INV_VoltageKp * 100.0f + 0.5f) + step) / 100.0f,
-                    INV_VoltageKi);
-                break;
-            case MENU_KI:
-                INV_SetVoltageGains(INV_VoltageKp,
-                    ((int32_t)(INV_VoltageKi * 10.0f + 0.5f) + step) / 10.0f);
-                break;
-            case MENU_FB:
-                INV_SetFeedbackChannel(step > 0 ? 1 : 0);
-                break;
-            default:
-                break;
-            }
-        }
-        else if (key == 'A')
-        {
-            if (INV_PwmFlag) INV_OutputDisable();
-            else             INV_OutputEnable();
-        }
+    char key = Keyboard_GetKey();
 
-        if (key != KEYBOARD_NO_KEY) DrawPage(selected);
-        HAL_Delay(1);
+    if (key == 'D')                 /* 进入/退出参数菜单 */
+    {
+        if (menu_selected == MENU_NONE)
+        {
+            menu_selected = MENU_FREQ;
+            INV_OutputDisable();
+        }
+        else
+            menu_selected = MENU_NONE;
+        menu_dirty = 1U;
+    }
+    else if (key == 'C')            /* 停机 */
+    {
+        INV_OutputDisable();
+        menu_selected = MENU_NONE;
+        menu_dirty = 1U;
+    }
+    else if (key == 'A')            /* 功率输出开关 */
+    {
+        if (INV_PwmFlag) INV_OutputDisable();
+        else             INV_OutputEnable();
+        menu_dirty = 1U;
+    }
+    else if ((key == '2' || key == '8') && menu_selected != MENU_NONE)
+    {
+        menu_selected = key == '8' ? menu_selected + 1
+                                   : menu_selected + MENU_COUNT - 1;
+        menu_selected %= MENU_COUNT;
+        menu_dirty = 1U;
+    }
+    else if ((key == '4' || key == '6') && menu_selected != MENU_NONE)
+    {
+        MenuAdjust(key == '6' ? 1 : -1);
+        menu_dirty = 1U;
+    }
+
+    /* 浏览态也要定时刷新 RMS/输出状态。 */
+    if (++menu_refresh_ms >= 200U)
+    {
+        menu_refresh_ms = 0U;
+        menu_dirty = 1U;
     }
 }

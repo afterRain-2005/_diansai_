@@ -83,8 +83,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  char key;
-  uint32_t standby_tick = 0U;
 
   /* USER CODE END 1 */
 
@@ -127,8 +125,7 @@ int main(void)
   OLED_Refresh();
   HAL_Delay(2000);
 
-  INV_ShowStandby();
-  standby_tick = HAL_GetTick();
+  INV_Menu_Init();
 
   /* USER CODE END 2 */
 
@@ -139,32 +136,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    key = Keyboard_GetKey();
-    if (key == 'A')                 /* 功率输出开关 */
-    {
-      if (INV_PwmFlag) INV_OutputDisable();
-      else             INV_OutputEnable();
-      INV_ShowStandby();
-      standby_tick = HAL_GetTick();
-    }
-    else if (key == 'C')
-    {
-      INV_OutputDisable();
-      INV_ShowStandby();
-    }
-    else if (key == 'D')            /* 进入参数菜单 */
-    {
-      INV_Menu_Run();
-      INV_ShowStandby();
-      standby_tick = HAL_GetTick();
-    }
-
-    /* 定时刷新输出命令和频率、幅度。 */
-    if (HAL_GetTick() - standby_tick >= 200U)
-    {
-      standby_tick = HAL_GetTick();
-      INV_ShowStandby();
-    }
+    /* 按键和菜单状态机在 Keyboard_TickISR 里跑，这里只负责刷新显示。 */
+    if (INV_Menu_TakeUpdate())
+      INV_Menu_Draw();
   }
   /* USER CODE END 3 */
 }
@@ -583,6 +557,7 @@ static void MX_GPIO_Init(void)
 void Keyboard_TickISR(void)
 {
   Keyboard_ScanISR();
+  INV_Menu_TickISR();
 }
 
 /* USER CODE END 4 */

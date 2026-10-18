@@ -11,8 +11,6 @@ volatile int32_t INV_Amp = INV_AMP_DEFAULT;
 volatile int32_t INV_PwmFlag;
 volatile int32_t INV_LoopEnable;
 volatile int32_t INV_FeedbackChannel;
-volatile float INV_VoltageKp = INV_VOLTAGE_KP_DEFAULT;
-volatile float INV_VoltageKi = INV_VOLTAGE_KI_DEFAULT;
 volatile float INV_TargetVoltage = 0.0f;
 volatile float INV_Vrms = -1.0f;
 
@@ -53,7 +51,7 @@ uint32_t INV_GetLoopState(void)
 {
     if (!INV_LoopEnable) return INV_LOOP_OPEN;
     if (INV_TargetVoltage <= 0.0f ||
-        (INV_VoltageKp == 0.0f && INV_VoltageKi == 0.0f))
+        (INV_VOLTAGE_KP == 0.0f && INV_VOLTAGE_KI == 0.0f))
         return INV_LOOP_SETUP;
     return INV_Vrms < 0.0f ? INV_LOOP_WAIT : INV_LOOP_READY;
 }
@@ -73,17 +71,6 @@ void INV_SetFeedbackChannel(int32_t channel)
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
     INV_FeedbackChannel = channel;
-    ResetVoltageControl();
-    __set_PRIMASK(primask);
-}
-
-void INV_SetVoltageGains(float kp, float ki)
-{
-    if (kp < 0.0f || ki < 0.0f || kp > 9.99f || ki > 99.9f) return;
-    uint32_t primask = __get_PRIMASK();
-    __disable_irq();
-    INV_VoltageKp = kp;
-    INV_VoltageKi = ki;
     ResetVoltageControl();
     __set_PRIMASK(primask);
 }
@@ -120,8 +107,8 @@ void INV_VoltageControlTick(float voltage)
     if (elapsed >= 1U)
     {
         voltage_pi_tick = now;
-        INV_VoltagePI(INV_TargetVoltage, INV_Vrms, INV_VoltageKp,
-                      INV_VoltageKi, (float)elapsed * 0.001f);
+        INV_VoltagePI(INV_TargetVoltage, INV_Vrms, INV_VOLTAGE_KP,
+                      INV_VOLTAGE_KI, (float)elapsed * 0.001f);
     }
 }
 
