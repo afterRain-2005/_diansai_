@@ -8,7 +8,7 @@
 #define INV_FREQ_DEFAULT  50
 #define INV_AMP_MIN       1
 #define INV_AMP_MAX       99
-#define INV_AMP_DEFAULT   90
+#define INV_AMP_DEFAULT   20
 
 /* TIM1 Update 名义触发 20 kHz，400 点对应默认 50 Hz 的一周（20 ms）。
  * 接入闭环前须实测采样率；基波频率改变时，固定窗口不一定覆盖整数周。
