@@ -28,4 +28,5 @@ g474_code/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_hal_tim_ex.h \
   ..\Core\Inc\oled.h ..\Core\Inc\Keyboard.h ..\Core\Inc\Bipolar_PWM.h \
-  ..\Core\Inc\inverter_control_tools.h ..\Core\Inc\inverter_menu.h
+  ..\Core\Inc\inverter_control_tools.h ..\Core\Inc\inverter_menu.h \
+  ..\Core\Inc\inverter_sampling.h

@@ -10,8 +10,10 @@
 #define INV_AMP_MAX       99
 #define INV_AMP_DEFAULT   90
 
-/* 窗口时长 = 点数 / 实际采样频率；200 点在 10 kHz 采样下为 20 ms。 */
-#define INV_RMS_WINDOW_SIZE 200U
+/* TIM1 Update 名义触发 20 kHz，400 点对应默认 50 Hz 的一周（20 ms）。
+ * 接入闭环前须实测采样率；基波频率改变时，固定窗口不一定覆盖整数周。
+ */
+#define INV_RMS_WINDOW_SIZE 400U
 
 extern volatile int32_t INV_Freq;    /* 基波频率，Hz */
 extern volatile int32_t INV_Amp;     /* 调制幅度，% */

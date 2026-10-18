@@ -4,6 +4,7 @@
 #include "inverter_mock/main.h"
 #include "../Core/Src/Bipolar_PWM.c"
 #include "../Core/Src/inverter_control_tools.c"
+#include "../Core/Src/inverter_sampling.c"
 #include "../Core/Src/inverter_menu.c"
 #include "../Core/Src/oled.c"
 
@@ -11,12 +12,33 @@ GPIO_TypeDef test_gpio_a, test_gpio_b, test_gpio_d, test_gpio_e;
 TIM_TypeDef test_tim1, test_tim5;
 RCC_TypeDef test_rcc;
 TIM_HandleTypeDef htim1 = {TIM1}, htim5 = {TIM5};
+ADC_TypeDef test_adc;
+ADC_HandleTypeDef hadc1 = {ADC1};
 SPI_HandleTypeDef hspi2;
 static uint32_t test_primask, test_tick, test_spi_calls;
 static HAL_StatusTypeDef test_spi_status;
 static uint8_t test_pixels[OLED_PAGES][OLED_WIDTH];
 static uint32_t test_pixel_page;
 static const char *test_keys;
+static HAL_StatusTypeDef test_adc_status;
+static uint32_t test_adc_dma_starts;
+
+HAL_StatusTypeDef HAL_ADCEx_Calibration_Start(ADC_HandleTypeDef *handle, uint32_t mode)
+{
+    assert(handle == &hadc1 && mode == ADC_SINGLE_ENDED);
+    return test_adc_status;
+}
+HAL_StatusTypeDef HAL_ADC_Start_DMA(ADC_HandleTypeDef *handle, uint32_t *data, uint32_t length)
+{
+    assert(handle == &hadc1 && data == (uint32_t *)sampling_dma && length == 6U);
+    test_adc_dma_starts++;
+    return test_adc_status;
+}
+HAL_StatusTypeDef HAL_ADC_Stop_DMA(ADC_HandleTypeDef *handle)
+{
+    assert(handle == &hadc1);
+    return test_adc_status;
+}
 
 uint32_t __get_PRIMASK(void) { return test_primask; }
 void __disable_irq(void) { test_primask = 1U; }
@@ -67,18 +89,18 @@ static void CheckControl(void)
     RCC->APB2ENR = RCC_APB2ENR_TIM1EN;
     RCC->AHB2ENR = RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN;
     TIM1->ARR = INV_PERIOD;
-    TIM1->BDTR = 149U;
+    TIM1->BDTR = 5U;
     assert(INV_Init() == HAL_OK);
     assert(!INV_PwmFlag && !(TIM1->BDTR & TIM_BDTR_MOE));
-    assert((TIM1->BDTR & 255U) == 149U);
-    assert(TIM5->ARR == 443U);
+    assert((TIM1->BDTR & 255U) == 5U);
+    assert(TIM5->ARR == 888U);
     assert(TIM1->CR1 & TIM_CR1_CEN);
     assert(TIM5->DIER & TIM_IT_UPDATE);
 
     INV_SetFrequency(INT32_MAX);
-    assert(INV_Freq == INV_FREQ_MAX && TIM5->ARR == 221U);
+    assert(INV_Freq == INV_FREQ_MAX && TIM5->ARR == 443U);
     INV_SetFrequency(INT32_MIN);
-    assert(INV_Freq == INV_FREQ_MIN && TIM5->ARR == 740U);
+    assert(INV_Freq == INV_FREQ_MIN && TIM5->ARR == 1480U);
     INV_SetAmplitude(INT32_MAX);
     assert(INV_Amp == INV_AMP_MAX);
     INV_OutputEnable();
@@ -110,7 +132,8 @@ static void CheckControl(void)
         if (duties[0][i] > maximum) maximum = duties[0][i];
         squares += (uint64_t)(centered * centered);
     }
-    assert(minimum <= 3U && maximum >= INV_PERIOD - 3U);
+    uint32_t edge_margin = INV_PERIOD * (100U - INV_AMP_MAX) / 200U;
+    assert(minimum <= edge_margin + 2U && maximum >= INV_PERIOD - edge_margin - 2U);
     float expected_peak = INV_PERIOD * INV_AMP_MAX / 200.0f;
     float expected_square_mean = expected_peak * expected_peak / 2.0f;
     assert(fabsf((float)squares / INV_SAMP_NUMBER - expected_square_mean) <
@@ -119,9 +142,10 @@ static void CheckControl(void)
     INV_SetAmplitude(INT32_MIN);
     assert(INV_Amp == INV_AMP_MIN);
     HAL_TIM_PeriodElapsedCallback(&htim5);
+    uint32_t minimum_amp_counts = INV_PERIOD * INV_AMP_MIN / 200U;
     for (uint32_t ch = 0; ch < 3U; ch++)
-        assert(TIM1->compare[ch] >= INV_PERIOD / 2 - 2U &&
-               TIM1->compare[ch] <= INV_PERIOD / 2 + 2U);
+        assert(TIM1->compare[ch] >= INV_PERIOD / 2 - minimum_amp_counts &&
+               TIM1->compare[ch] <= INV_PERIOD / 2 + minimum_amp_counts);
     test_primask = 1U;
     INV_OutputDisable();
     assert(test_primask == 1U && !INV_PwmFlag && !(TIM1->BDTR & TIM_BDTR_MOE));
@@ -203,6 +227,64 @@ static void CheckVoltageControl(void)
     assert(INV_CalculateVoltageRms(10.0f) < 0.0f);
 }
 
+static void FeedSampling(uint16_t v1, uint16_t v2, uint16_t current)
+{
+    static uint32_t half;
+    uint32_t index = half * INV_SAMPLE_CHANNELS;
+    sampling_dma[index] = v1;
+    sampling_dma[index + 1U] = v2;
+    sampling_dma[index + 2U] = current;
+    if (half == 0U) HAL_ADC_ConvHalfCpltCallback(&hadc1);
+    else HAL_ADC_ConvCpltCallback(&hadc1);
+    half ^= 1U;
+}
+
+static void CheckSampling(void)
+{
+    INV_SamplingData data;
+    assert(INV_SamplingConvert(100U, 0.5f, -3.0f) == 47.0f);
+    test_adc_status = HAL_ERROR;
+    assert(INV_SamplingStart() == HAL_ERROR && test_adc_dma_starts == 0U);
+    test_adc_status = HAL_OK;
+    assert(INV_SamplingStart() == HAL_OK && test_adc_dma_starts == 1U);
+    FeedSampling(4000U, 4000U, 4000U); /* 启动时的不完整周期不得用于偏置。 */
+    INV_SamplingNotifyCycle();
+    FeedSampling(2100U, 1050U, 3020U);
+    INV_SamplingGetData(&data);
+    assert(!data.offset_valid);
+    FeedSampling(2000U, 1000U, 3000U);
+    FeedSampling(1900U, 950U, 2980U);
+    FeedSampling(2000U, 1000U, 3000U);
+    INV_SamplingNotifyCycle();
+    FeedSampling(2200U, 1150U, 3120U);
+    INV_SamplingGetData(&data);
+    assert(data.offset_valid && data.sequence == 6U);
+    assert(data.raw[0] == 2200U && data.raw[1] == 1150U && data.raw[2] == 3120U);
+    assert(data.offset[0] == 2000.0f && data.offset[1] == 1000.0f && data.offset[2] == 3000.0f);
+    assert(data.ac[0] == 200.0f && data.ac[1] == 150.0f && data.ac[2] == 120.0f);
+    FeedSampling(2100U, 1100U, 3100U);
+    FeedSampling(2000U, 1050U, 3080U);
+    FeedSampling(2100U, 1100U, 3100U);
+    INV_SamplingGetData(&data);
+    assert(data.offset[0] == 2000.0f); /* 周期内固定使用上一周的偏置。 */
+    INV_SamplingNotifyCycle();
+    FeedSampling(2400U, 1400U, 3400U);
+    INV_SamplingGetData(&data);
+    assert(data.offset[0] == 2100.0f && data.offset[1] == 1100.0f && data.offset[2] == 3100.0f);
+    assert(data.ac[0] == 300.0f && data.ac[1] == 300.0f && data.ac[2] == 300.0f);
+    test_primask = 1U;
+    INV_SamplingGetData(&data);
+    assert(test_primask == 1U);
+    test_primask = 0U;
+    assert(INV_SamplingStop() == HAL_OK);
+    INV_SamplingGetData(&data);
+    assert(!data.offset_valid);
+    assert(INV_SamplingStart() == HAL_OK);
+    INV_SamplingGetData(&data);
+    assert(!data.offset_valid && data.sequence == 0U);
+    INV_SamplingStop();
+}
+
 static void CheckMenu(void)
 {
     INV_SetFrequency(50);
@@ -252,8 +334,9 @@ int main(void)
 {
     CheckControl();
     CheckVoltageControl();
+    CheckSampling();
     CheckMenu();
     CheckOled();
-    puts("inverter_check: PASS (SPWM, frequency, amplitude, output, RMS, PI, menu, OLED)");
+    puts("inverter_check: PASS (SPWM, frequency, amplitude, output, RMS, PI, ADC sampling/offset, menu, OLED)");
     return 0;
 }

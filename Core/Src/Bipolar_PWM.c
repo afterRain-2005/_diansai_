@@ -1,5 +1,6 @@
 #include "Bipolar_PWM.h"
 #include "inverter_control_tools.h"
+#include "inverter_sampling.h"
 #include <math.h>
 
 extern TIM_HandleTypeDef htim1;
@@ -18,6 +19,7 @@ void sin_duty_init(void)
 
 void Bipolar_pwm(void)
 {
+    if (phase_index == 0U) INV_SamplingNotifyCycle();
     /* CCR = ARR/2 + m * ARR/2 * sin(theta)，三相相差 120 度。 */
     int32_t amplitude = INV_PwmFlag ? INV_Amp : 0;
     uint32_t duty[3];
