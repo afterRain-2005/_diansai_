@@ -20,7 +20,8 @@ enum
 
 static void DrawPage(int32_t selected)
 {
-    char buffer[17];
+    /* 显示按 16 字符截断，缓冲区留足 %ld/%lu 全量程，避免 snprintf 截断告警。 */
+    char buffer[48];
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
     float rms = INV_Vrms;
