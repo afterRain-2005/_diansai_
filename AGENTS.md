@@ -2,7 +2,7 @@
 
 ## 项目结构与模块组织
 
-本项目为 STM32G474VETx 三相 SPWM 逆变器固件，使用 TIM1 生成 50 kHz 互补 PWM，支持硬件死区和刹车保护，通过 TIM5 更新调制，配有 ADC1 DMA 采样、矩阵键盘和 SSD1306 OLED。
+本项目为 STM32G474VETx 三相 SPWM 逆变器固件，使用 TIM8 生成 50 kHz 互补 PWM，支持硬件死区和刹车保护，通过 TIM5 更新调制，配有 ADC1 DMA 采样、矩阵键盘和 SSD1306 OLED。
 
 - `Core/Src/`：应用代码，包括 `Bipolar_PWM.c`、`inverter_control_tools.c`、`inverter_menu.c`、`Keyboard.c`、`oled.c`，以及 HAL 初始化和中断处理代码。
 - `Core/Inc/`：对应的头文件与配置；OLED 字模内嵌于 `oled.c`。
