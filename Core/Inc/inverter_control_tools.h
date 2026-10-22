@@ -10,7 +10,7 @@
 #define INV_AMP_MAX       99
 #define INV_AMP_DEFAULT   90
 
-/* TIM1 Update 名义触发 20 kHz，400 点对应默认 50 Hz 的一周（20 ms）。
+/* TIM8 Update 名义触发 20 kHz，400 点对应默认 50 Hz 的一周（20 ms）。
  * 接入闭环前须实测采样率；基波频率改变时，固定窗口不一定覆盖整数周。
  */
 #define INV_RMS_WINDOW_SIZE 400U

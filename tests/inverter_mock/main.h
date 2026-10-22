@@ -24,7 +24,7 @@
 #define GPIO_PULLUP 1U
 #define GPIO_SPEED_FREQ_LOW 0U
 #define __HAL_RCC_GPIOE_CLK_ENABLE() ((void)0)
-#define RCC_APB2ENR_TIM1EN 1U
+#define RCC_APB2ENR_TIM8EN 0x2000U
 #define RCC_AHB2ENR_GPIOAEN 1U
 #define RCC_AHB2ENR_GPIOBEN 2U
 #define TIM_BDTR_MOE 0x8000U
@@ -71,7 +71,7 @@ typedef struct { uint32_t MEMRMP; } SYSCFG_TypeDef;
 typedef struct { uint32_t TypeErase, Banks, Page, NbPages; } FLASH_EraseInitTypeDef;
 
 extern GPIO_TypeDef test_gpio_a, test_gpio_b, test_gpio_d, test_gpio_e;
-extern TIM_TypeDef test_tim1, test_tim5;
+extern TIM_TypeDef test_tim8, test_tim5;
 extern ADC_TypeDef test_adc;
 extern RCC_TypeDef test_rcc;
 extern FLASH_TypeDef test_flash;
@@ -81,7 +81,7 @@ extern uint32_t SystemCoreClock, test_flash_size;
 #define GPIOB (&test_gpio_b)
 #define GPIOD (&test_gpio_d)
 #define GPIOE (&test_gpio_e)
-#define TIM1 (&test_tim1)
+#define TIM8 (&test_tim8)
 #define TIM5 (&test_tim5)
 #define ADC1 (&test_adc)
 #define RCC (&test_rcc)
@@ -103,8 +103,6 @@ extern uint32_t SystemCoreClock, test_flash_size;
 #define INV_OFFLINE_GPIO_Port GPIOA
 #define RS_CTRL_Pin GPIO_PIN_6
 #define RS_CTRL_GPIO_Port GPIOB
-#define INV_BKIN_Pin GPIO_PIN_6
-#define INV_BKIN_GPIO_Port GPIOA
 #define OLED_RES_Pin GPIO_PIN_0
 #define OLED_RES_GPIO_Port GPIOD
 #define OLED_DC_Pin GPIO_PIN_1

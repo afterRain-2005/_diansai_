@@ -31,7 +31,7 @@ typedef struct
     uint32_t sequence;                 /* 已处理的三通道采样帧数 */
 } INV_SamplingData;
 
-/* 外设初始化完成、TIM1 启动前调用；校准 ADC 并启动三路循环 DMA。 */
+/* 外设初始化完成、TIM8 启动前调用；校准 ADC 并启动三路循环 DMA。 */
 HAL_StatusTypeDef INV_SamplingStart(void);
 HAL_StatusTypeDef INV_SamplingStop(void);
 /* 主循环读取一致快照；不会触发采样或 PI。 */

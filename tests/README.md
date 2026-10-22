@@ -8,15 +8,17 @@ cmd /c tests\run_checks.cmd
 
 脚本使用 MSVC 或 PATH 中的 GCC，检查三相 SPWM 相位、占空比范围、频率和幅度设置、启停、两项参数菜单、OLED 裁剪与 SPI 重试，以及键盘扫描和去抖。
 
-当前运行路径为开环 SPWM 加 ADC DMA 采样，不自动调用 RMS/PI。上电默认值由 `inverter_control_tools.h` 定义，目前为 50 Hz、90% 幅度，幅值范围 1%～99%；TIM1 的死区和 Break 设置沿用 CubeMX。A 键切换启停，C 键停止，D 键进入菜单；菜单内 2/8 选择频率或幅度，4/6 减加，C/D 返回。参数立即生效，重启恢复默认值。
+当前运行路径为开环 SPWM 加 ADC DMA 采样，不自动调用 RMS/PI。上电默认值由 `inverter_control_tools.h` 定义，目前为 50 Hz、90% 幅度，幅值范围 1%～99%；TIM8 的死区和 Break 设置沿用 CubeMX。A 键切换启停，C 键停止，D 键进入菜单；菜单内 2/8 选择频率或幅度，4/6 减加，C/D 返回。参数立即生效，重启恢复默认值。
 
-`inverter_sampling.c` 使用 ADC1 Rank1/IN6/PC0、Rank2/IN7/PC1、Rank3/IN8/PC2，依次为电压1、电压2、电流。规则序列已同步为三个 Rank；六个半字的循环 DMA 缓冲区分为两帧，半满和全满回调各处理一帧。启动顺序为外设初始化、`INV_SamplingStart()` 校准并就绪 DMA、`INV_Init()` 启动 TIM1/TIM5。
+TIM8 三相主输出 CH1/CH2/CH3 对应 PC6/PC7/PC8，互补输出 CH1N/CH2N/CH3N 对应 PC10/PC11/PC12；ADC1 使用 TIM8 TRGO 触发。旧 TIM1 引脚配置已移除，TIM8 Break 保持 CubeMX 当前的禁用状态。
+
+`inverter_sampling.c` 使用 ADC1 Rank1/IN6/PC0、Rank2/IN7/PC1、Rank3/IN8/PC2，依次为电压1、电压2、电流。规则序列已同步为三个 Rank；六个半字的循环 DMA 缓冲区分为两帧，半满和全满回调各处理一帧。启动顺序为外设初始化、`INV_SamplingStart()` 校准并就绪 DMA、`INV_Init()` 启动 TIM8/TIM5。
 
 `inverter_sampling.h` 中三组 K/B 是 `value = K * ADC原始计数 + B` 的线性拟合参数，目前 K=1、B=0，仅为占位，结果尚不是实际 V/A。`INV_SamplingGetData(&data)` 读取一致快照，包含原始值 `raw`、拟合值 `value`、上一周均值 `offset`、扣偏置值 `ac`、`offset_valid` 和已处理帧号 `sequence`。快照用于查看最新数据，不能通过低速主循环读取快照代替逐点处理来计算 RMS。
 
 正弦表索引进入 0 时调用 `INV_SamplingNotifyCycle()`。DMA 入口通过 `INV_SamplingUpdateOffset()` 观察周期号变化，以上一完整周期各路原始均值建立偏置；启动后的部分周期丢弃，再收满一周后才置 `offset_valid=1`。本周固定使用上一周偏置，公式为 `offset=K*mean(raw_previous_cycle)+B`，`ac=value-offset`。周期按 DMA 回调观察到的边界划分，存在采样帧量级的边界量化/延迟；不假定每周固定 200 或 400 点。该方法会同时去掉信号本身的直流分量，适用于本次需要去均值的交流反馈。
 
-当前 SYSCLK/HCLK 为 HSI 16 MHz，APB1/APB2 均不分频，TIM1/TIM5 时钟均为 16 MHz。TIM1 中心对齐、PSC=0、ARR=800，载波仍为 10 kHz；三相初始 CCR 均为 400。RCR=0、TRGO=Update，上下溢出名义上产生 20 kHz ADC 触发；UDIS 临时屏蔽和软件 UG 会影响触发间隔。ADC 同步不分频，时钟为 16 MHz，每路采样 47.5 周期加 12.5 周期转换，三路扫描约 11.25 us。TIM5 默认 ARR=888，更新约 17.99775 kHz，对应基波约 49.99375 Hz；菜单更改频率时会重算 ARR。死区 DTG=5、CKD=DIV1，对应 312.5 ns；SPI2 保留 /32，SCK 为 500 kHz。HSE_VALUE=8 MHz 保留为外部晶振参数，当前未将其选作系统时钟。
+当前 SYSCLK/HCLK 为 HSI 16 MHz，APB1/APB2 均不分频，TIM8/TIM5 时钟均为 16 MHz。TIM8 中心对齐、PSC=0、ARR=800，载波仍为 10 kHz；三相初始 CCR 均为 400。RCR=0、TRGO=Update，上下溢出名义上产生 20 kHz ADC 触发；UDIS 临时屏蔽和软件 UG 会影响触发间隔。ADC 同步不分频，时钟为 16 MHz，每路采样 47.5 周期加 12.5 周期转换，三路扫描约 11.25 us。TIM5 默认 ARR=888，更新约 17.99775 kHz，对应基波约 49.99375 Hz；菜单更改频率时会重算 ARR。死区 DTG=5、CKD=DIV1，对应 312.5 ns；SPI2 保留 /32，SCK 为 500 kHz。HSE_VALUE=8 MHz 保留为外部晶振参数，当前未将其选作系统时钟。
 
 实际处理耗时、采样间隔、丢样、HSI 时钟误差及标定精度需上板测量，不能将名义触发频率当作已验证采样率。RMS 窗口已改为 400 点，对应名义 20 kHz 采样下的 20 ms，接入前仍须按实测采样率确认。
 

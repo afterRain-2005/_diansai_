@@ -3,7 +3,7 @@
 #include "inverter_sampling.h"
 #include <math.h>
 
-extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim8;
 extern TIM_HandleTypeDef htim5;
 
 static int16_t sine_table[INV_SAMP_NUMBER];
@@ -32,12 +32,12 @@ void Bipolar_pwm(void)
     }
 
     /* 三相预装载值写完后再允许更新事件。 */
-    uint32_t update_disabled = TIM1->CR1 & TIM_CR1_UDIS;
-    SET_BIT(TIM1->CR1, TIM_CR1_UDIS);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, duty[0]);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, duty[1]);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, duty[2]);
-    if (update_disabled == 0U) CLEAR_BIT(TIM1->CR1, TIM_CR1_UDIS);
+    uint32_t update_disabled = TIM8->CR1 & TIM_CR1_UDIS;
+    SET_BIT(TIM8->CR1, TIM_CR1_UDIS);
+    __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, duty[0]);
+    __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, duty[1]);
+    __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, duty[2]);
+    if (update_disabled == 0U) CLEAR_BIT(TIM8->CR1, TIM_CR1_UDIS);
 
     phase_index = (phase_index + 1U) % INV_SAMP_NUMBER;
 }
@@ -49,12 +49,12 @@ HAL_StatusTypeDef INV_Init(void)
     INV_SetFrequency(INV_FREQ_DEFAULT);
     INV_SetAmplitude(INV_AMP_DEFAULT);
     Bipolar_pwm();
-    TIM1->EGR = TIM_EGR_UG;
+    TIM8->EGR = TIM_EGR_UG;
 
     /* 定时器持续运行，由 MOE 和驱动使能脚控制输出，死区沿用 CubeMX 配置。 */
-    SET_BIT(TIM1->CCER, TIM_CCER_CC1E | TIM_CCER_CC1NE | TIM_CCER_CC2E |
+    SET_BIT(TIM8->CCER, TIM_CCER_CC1E | TIM_CCER_CC1NE | TIM_CCER_CC2E |
                        TIM_CCER_CC2NE | TIM_CCER_CC3E | TIM_CCER_CC3NE);
-    if (HAL_TIM_Base_Start(&htim1) != HAL_OK) return HAL_ERROR;
+    if (HAL_TIM_Base_Start(&htim8) != HAL_OK) return HAL_ERROR;
     return HAL_TIM_Base_Start_IT(&htim5);
 }
 

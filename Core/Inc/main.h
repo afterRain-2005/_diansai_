@@ -79,8 +79,6 @@ void Keyboard_TickISR(void);
 
 /* USER CODE BEGIN Private defines */
 
-#define INV_BKIN_Pin GPIO_PIN_6
-#define INV_BKIN_GPIO_Port GPIOA
 
 /* USER CODE END Private defines */
 

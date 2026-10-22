@@ -3,8 +3,8 @@
 
 #include "main.h"
 
-/* HSI 16 MHz，AHB/APB1/APB2 均不分频，TIM1/TIM5 PSC=0。
- * TIM1 中心对齐 ARR=800，载波为 10 kHz。
+/* HSI 16 MHz，AHB/APB1/APB2 均不分频，TIM8/TIM5 PSC=0。
+ * TIM8 中心对齐 ARR=800，载波为 10 kHz。
  * 每个基波周期查表 360 次，TIM5 中断频率为 360*输出频率。
  */
 #define INV_TIM_CLK      16000000UL

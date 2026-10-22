@@ -9,9 +9,9 @@
 #include "../Core/Src/oled.c"
 
 GPIO_TypeDef test_gpio_a, test_gpio_b, test_gpio_d, test_gpio_e;
-TIM_TypeDef test_tim1, test_tim5;
+TIM_TypeDef test_tim8, test_tim5;
 RCC_TypeDef test_rcc;
-TIM_HandleTypeDef htim1 = {TIM1}, htim5 = {TIM5};
+TIM_HandleTypeDef htim8 = {TIM8}, htim5 = {TIM5};
 ADC_TypeDef test_adc;
 ADC_HandleTypeDef hadc1 = {ADC1};
 SPI_HandleTypeDef hspi2;
@@ -86,15 +86,15 @@ HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *handle, uint8_t *data, uin
 static void CheckControl(void)
 {
     uint32_t duties[3][INV_SAMP_NUMBER];
-    RCC->APB2ENR = RCC_APB2ENR_TIM1EN;
+    RCC->APB2ENR = RCC_APB2ENR_TIM8EN;
     RCC->AHB2ENR = RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN;
-    TIM1->ARR = INV_PERIOD;
-    TIM1->BDTR = 5U;
+    TIM8->ARR = INV_PERIOD;
+    TIM8->BDTR = 5U;
     assert(INV_Init() == HAL_OK);
-    assert(!INV_PwmFlag && !(TIM1->BDTR & TIM_BDTR_MOE));
-    assert((TIM1->BDTR & 255U) == 5U);
+    assert(!INV_PwmFlag && !(TIM8->BDTR & TIM_BDTR_MOE));
+    assert((TIM8->BDTR & 255U) == 5U);
     assert(TIM5->ARR == 888U);
-    assert(TIM1->CR1 & TIM_CR1_CEN);
+    assert(TIM8->CR1 & TIM_CR1_CEN);
     assert(TIM5->DIER & TIM_IT_UPDATE);
 
     INV_SetFrequency(INT32_MAX);
@@ -104,7 +104,7 @@ static void CheckControl(void)
     INV_SetAmplitude(INT32_MAX);
     assert(INV_Amp == INV_AMP_MAX);
     INV_OutputEnable();
-    assert(INV_PwmFlag && (TIM1->BDTR & TIM_BDTR_MOE));
+    assert(INV_PwmFlag && (TIM8->BDTR & TIM_BDTR_MOE));
     assert(GPIOA->ODR & PWM_EN_Pin);
     assert(!(GPIOA->ODR & INV_OFFLINE_Pin));
     assert(GPIOB->ODR & RS_CTRL_Pin);
@@ -114,7 +114,7 @@ static void CheckControl(void)
         HAL_TIM_PeriodElapsedCallback(&htim5);
         for (uint32_t ch = 0; ch < 3U; ch++)
         {
-            duties[ch][i] = TIM1->compare[ch];
+            duties[ch][i] = TIM8->compare[ch];
             assert(duties[ch][i] <= INV_PERIOD);
         }
     }
@@ -144,21 +144,21 @@ static void CheckControl(void)
     HAL_TIM_PeriodElapsedCallback(&htim5);
     uint32_t minimum_amp_counts = INV_PERIOD * INV_AMP_MIN / 200U;
     for (uint32_t ch = 0; ch < 3U; ch++)
-        assert(TIM1->compare[ch] >= INV_PERIOD / 2 - minimum_amp_counts &&
-               TIM1->compare[ch] <= INV_PERIOD / 2 + minimum_amp_counts);
+        assert(TIM8->compare[ch] >= INV_PERIOD / 2 - minimum_amp_counts &&
+               TIM8->compare[ch] <= INV_PERIOD / 2 + minimum_amp_counts);
     test_primask = 1U;
     INV_OutputDisable();
-    assert(test_primask == 1U && !INV_PwmFlag && !(TIM1->BDTR & TIM_BDTR_MOE));
+    assert(test_primask == 1U && !INV_PwmFlag && !(TIM8->BDTR & TIM_BDTR_MOE));
     assert(GPIOA->BSRR == ((uint32_t)PWM_EN_Pin << 16U | INV_OFFLINE_Pin));
     assert(GPIOB->BSRR == (uint32_t)RS_CTRL_Pin << 16U);
     test_primask = 0U;
     INV_SetAmplitude(50);
     HAL_TIM_PeriodElapsedCallback(&htim5);
-    for (uint32_t ch = 0; ch < 3U; ch++) assert(TIM1->compare[ch] == INV_PERIOD / 2);
-    SET_BIT(TIM1->CR1, TIM_CR1_UDIS);
+    for (uint32_t ch = 0; ch < 3U; ch++) assert(TIM8->compare[ch] == INV_PERIOD / 2);
+    SET_BIT(TIM8->CR1, TIM_CR1_UDIS);
     Bipolar_pwm();
-    assert(TIM1->CR1 & TIM_CR1_UDIS);
-    CLEAR_BIT(TIM1->CR1, TIM_CR1_UDIS);
+    assert(TIM8->CR1 & TIM_CR1_UDIS);
+    CLEAR_BIT(TIM8->CR1, TIM_CR1_UDIS);
 }
 
 static void CheckVoltageControl(void)
